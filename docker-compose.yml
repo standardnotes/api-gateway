@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  web:
+    image: api-gateway-local
+    build: .
+    command: start-local
+    env_file: .env
+    restart: unless-stopped
+    ports:
+      - 3001:${PORT}
+    networks:
+      standardnotes_proxy:
+        aliases:
+          - api_gateway
+      api_gateway: {}
+    volumes:
+      - .:/var/www
+
+networks:
+  api_gateway:
+    name: api_gateway
+  standardnotes_proxy:
+    name: standardnotes

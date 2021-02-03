@@ -1,0 +1,10 @@
+{
+  "extends": "./node_modules/@standardnotes/config/src/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist"
+  },
+  "include": [
+    "src/**/*",
+    "bin/**/*"
+  ]
+}
