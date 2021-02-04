@@ -28,10 +28,11 @@ export class V1APIController extends BaseHttpController {
 
   private async passThrough(request: Request): Promise<results.JsonResult | results.BadRequestResult | results.NotFoundResult | results.InternalServerErrorResult> {
     try {
-      const serviceResponse = await this.httpClient(
-          request.method,
-          `${this.authServerUrl}/${request.path.replace('/v1/', '')}`
-        )
+      const passUrl = `${this.authServerUrl}/${request.path.replace('/v1/', '')}`
+
+      this.logger.debug(`Passing the request to: [${request.method}] ${passUrl}`)
+
+      const serviceResponse = await this.httpClient(request.method, passUrl)
         .timeout(this.httpCallTimeout)
         .set(request.headers)
         .query(request.params)
