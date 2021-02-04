@@ -10,7 +10,7 @@ export class V1APIController extends BaseHttpController {
   constructor(
     @inject(TYPES.HTTPClient) private httpClient: SuperAgentStatic,
     @inject(TYPES.HTTP_CALL_TIMEOUT) private httpCallTimeout: number,
-    @inject(TYPES.SYNCING_SERVER_JS_URL) private syncingServerJsUrl: string,
+    @inject(TYPES.AUTH_SERVER_URL) private authServerUrl: string,
     @inject(TYPES.Logger) private logger: Logger
   ) {
     super()
@@ -30,7 +30,7 @@ export class V1APIController extends BaseHttpController {
     try {
       const serviceResponse = await this.httpClient(
           request.method,
-          `${this.syncingServerJsUrl}/${request.path.replace('/v1/', '')}`
+          `${this.authServerUrl}/${request.path.replace('/v1/', '')}`
         )
         .timeout(this.httpCallTimeout)
         .set(request.headers)
