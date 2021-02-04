@@ -16,20 +16,42 @@ export class AuthMiddleware extends BaseMiddleware {
   }
 
   async handler (request: Request, response: Response, next: NextFunction): Promise<void> {
-    const authResponse = await this.httpClient
-      .post(`${this.authServerUrl}/sessions/validate`)
-      .set('Authorization', <string> request.headers.authorization)
-      .send()
-
-    this.logger.debug('Auth validation response: %O', authResponse.body)
-
-    if (!authResponse.ok) {
-      response.status(authResponse.status).send(authResponse.text)
+    if (!request.headers.authorization) {
+      response.status(401).send({
+        error: {
+          tag: 'invalid-auth',
+          message: 'Invalid login credentials.'
+        }
+      })
 
       return
     }
 
-    response.locals.authToken = authResponse.body.authToken
+    try {
+      const authResponse = await this.httpClient
+        .post(`${this.authServerUrl}/sessions/validate`)
+        .set('Authorization', request.headers.authorization)
+        .send()
+
+      this.logger.debug('Auth validation response: %O', authResponse.body)
+
+      if (!authResponse.ok) {
+        response.setHeader('content-type', authResponse.header['content-type'])
+        response.status(authResponse.status).send(authResponse.text)
+
+        return
+      }
+
+      response.locals.authToken = authResponse.body.authToken
+    } catch (error) {
+      this.logger.error('Could not pass the request to underlying services')
+      this.logger.debug('Response error: %O', error)
+
+      response.setHeader('content-type', error.response.header['content-type'])
+      response.status(error.status).send(error.response.text)
+
+      return
+    }
 
     return next()
   }

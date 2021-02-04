@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import { inject } from 'inversify'
-import { all, BaseHttpController, controller, results } from 'inversify-express-utils'
+import { BaseHttpController, controller, httpDelete, results } from 'inversify-express-utils'
 import { SuperAgentStatic } from 'superagent'
 import { Logger } from 'winston'
 import TYPES from '../Bootstrap/Types'
@@ -16,27 +16,15 @@ export class V1APIController extends BaseHttpController {
     super()
   }
 
-  @all('/auth*')
-  async auth(request: Request): Promise<results.JsonResult | results.BadRequestResult | results.NotFoundResult | results.InternalServerErrorResult> {
-    return this.passThrough(request)
-  }
-
-  @all('/session*')
-  async session(request: Request): Promise<results.JsonResult | results.BadRequestResult | results.NotFoundResult | results.InternalServerErrorResult> {
-    return this.passThrough(request)
-  }
-
-  private async passThrough(request: Request): Promise<results.JsonResult | results.BadRequestResult | results.NotFoundResult | results.InternalServerErrorResult> {
+  @httpDelete('/sessions/:uuid', TYPES.AuthMiddleware)
+  async deleteSession(request: Request): Promise<results.JsonResult | results.BadRequestResult | results.NotFoundResult | results.InternalServerErrorResult> {
     try {
-      const passUrl = `${this.authServerUrl}/${request.path.replace('/v1/', '')}`
-
-      this.logger.debug(`Passing the request to: [${request.method}] ${passUrl}`)
-
-      const serviceResponse = await this.httpClient(request.method, passUrl)
+      const serviceResponse = await this.httpClient(request.method, `${this.authServerUrl}/session/`)
         .timeout(this.httpCallTimeout)
         .set(request.headers)
-        .query(request.params)
-        .send()
+        .send({
+          uuid: request.params.uuid
+        })
 
       return this.json(serviceResponse.text, serviceResponse.status)
     } catch (error) {
