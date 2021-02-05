@@ -1,5 +1,6 @@
 const TYPES = {
   Logger: Symbol.for('Logger'),
+  HTTPClient: Symbol.for('HTTPClient'),
   // env vars
   SYNCING_SERVER_JS_URL: Symbol.for('SYNCING_SERVER_JS_URL'),
   SYNCING_SERVER_RUBY_URL: Symbol.for('SYNCING_SERVER_RUBY_URL'),
@@ -8,7 +9,7 @@ const TYPES = {
   // Middleware
   AuthMiddleware: Symbol.for('AuthMiddleware'),
   // Services
-  HTTPClient: Symbol.for('HTTPClient')
+  HTTPService: Symbol.for('HTTPService')
 }
 
 export default TYPES

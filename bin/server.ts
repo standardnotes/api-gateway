@@ -3,7 +3,9 @@ import 'reflect-metadata'
 import './tracer'
 
 import '../src/Controller/HealthCheckController'
-import '../src/Controller/V1APIController'
+import '../src/Controller/v1/SessionsController'
+import '../src/Controller/v1/UsersController'
+import '../src/Controller/v1/ActionsController'
 
 import * as helmet from 'helmet'
 import * as cors from 'cors'
@@ -35,7 +37,7 @@ void container.load().then(container => {
           connectSrc: ["*"],
           fontSrc: ["*", "'self'"],
           formAction: ["'self'"],
-          frameAncestors: ["*", "*.standardnotes.org"],
+          frameAncestors: ["*", "*.standardnotes.org", "*.standardnotes.com"],
           frameSrc: ["*", "blob:"],
           imgSrc: ["'self'", "*", "data:"],
           manifestSrc: ["'self'"],

@@ -1,30 +1,26 @@
 import { Request, Response } from 'express'
-import { inject } from 'inversify'
-import { BaseHttpController, controller, httpDelete } from 'inversify-express-utils'
+import { inject, injectable } from 'inversify'
 import { SuperAgentStatic } from 'superagent'
 import { Logger } from 'winston'
 import TYPES from '../Bootstrap/Types'
+import { HttpServiceInterface } from './HttpClientInterface'
 
-@controller('/v1')
-export class V1APIController extends BaseHttpController {
+@injectable()
+export class HttpService implements HttpServiceInterface {
   constructor(
     @inject(TYPES.HTTPClient) private httpClient: SuperAgentStatic,
     @inject(TYPES.HTTP_CALL_TIMEOUT) private httpCallTimeout: number,
     @inject(TYPES.AUTH_SERVER_URL) private authServerUrl: string,
     @inject(TYPES.Logger) private logger: Logger
   ) {
-    super()
   }
 
-  @httpDelete('/sessions/:uuid', TYPES.AuthMiddleware)
-  async deleteSession(request: Request, response: Response): Promise<void> {
+  async callAuthServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
     try {
-      const serviceResponse = await this.httpClient(request.method, `${this.authServerUrl}/session/`)
+      const serviceResponse = await this.httpClient(request.method, `${this.authServerUrl}/${endpoint}`)
         .timeout(this.httpCallTimeout)
         .set(request.headers)
-        .send({
-          uuid: request.params.uuid
-        })
+        .send(payload)
 
       response.setHeader('content-type', serviceResponse.header['content-type'])
       response.status(serviceResponse.status).send(serviceResponse.text)
