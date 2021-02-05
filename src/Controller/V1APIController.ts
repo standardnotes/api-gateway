@@ -1,6 +1,6 @@
-import { Request } from 'express'
+import { Request, Response } from 'express'
 import { inject } from 'inversify'
-import { BaseHttpController, controller, httpDelete, results } from 'inversify-express-utils'
+import { BaseHttpController, controller, httpDelete } from 'inversify-express-utils'
 import { SuperAgentStatic } from 'superagent'
 import { Logger } from 'winston'
 import TYPES from '../Bootstrap/Types'
@@ -17,7 +17,7 @@ export class V1APIController extends BaseHttpController {
   }
 
   @httpDelete('/sessions/:uuid', TYPES.AuthMiddleware)
-  async deleteSession(request: Request): Promise<results.JsonResult | results.BadRequestResult | results.NotFoundResult | results.InternalServerErrorResult> {
+  async deleteSession(request: Request, response: Response): Promise<void> {
     try {
       const serviceResponse = await this.httpClient(request.method, `${this.authServerUrl}/session/`)
         .timeout(this.httpCallTimeout)
@@ -26,19 +26,14 @@ export class V1APIController extends BaseHttpController {
           uuid: request.params.uuid
         })
 
-      return this.json(serviceResponse.text, serviceResponse.status)
+      response.setHeader('content-type', serviceResponse.header['content-type'])
+      response.status(serviceResponse.status).send(serviceResponse.text)
     } catch (error) {
       this.logger.error('Could not pass the request to underlying services')
       this.logger.debug('Response error: %O', error)
 
-      switch(error.status) {
-        case 404:
-          return this.notFound()
-        case 500:
-          return this.internalServerError()
-        default:
-          return this.badRequest()
-      }
+      response.setHeader('content-type', error.response.header['content-type'])
+      response.status(error.status).send(error.response.text)
     }
   }
 }
