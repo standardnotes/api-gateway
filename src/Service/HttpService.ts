@@ -22,15 +22,17 @@ export class HttpService implements HttpServiceInterface {
         .set(request.headers)
         .send(payload)
 
-      response.setHeader('content-type', serviceResponse.header['content-type'])
+      response.setHeader('content-type', serviceResponse.headers['content-type'])
       response.status(serviceResponse.status).send(serviceResponse.text)
     } catch (error) {
       this.logger.error('Could not pass the request to underlying services')
 
       this.logger.debug('Response error: %O', error.response)
 
-      response.setHeader('content-type', error.response.header['content-type'])
-      response.status(error.status).send(error.response.text)
+      if (error.response.headers && error.response.headers['content-type']) {
+        response.setHeader('content-type', error.response.headers['content-type'])
+      }
+      response.status(error.status).send(error.response.body)
     }
   }
 }

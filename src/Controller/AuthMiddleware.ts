@@ -43,8 +43,10 @@ export class AuthMiddleware extends BaseMiddleware {
 
       this.logger.debug('Response error: %O', error.response)
 
-      response.setHeader('content-type', error.response.header['content-type'])
-      response.status(error.status).send(error.response.text)
+      if (error.response.headers && error.response.headers['content-type']) {
+        response.setHeader('content-type', error.response.headers['content-type'])
+      }
+      response.status(error.status).send(error.response.body)
 
       return
     }
