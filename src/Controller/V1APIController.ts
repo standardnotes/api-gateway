@@ -30,7 +30,8 @@ export class V1APIController extends BaseHttpController {
       response.status(serviceResponse.status).send(serviceResponse.text)
     } catch (error) {
       this.logger.error('Could not pass the request to underlying services')
-      this.logger.debug('Response error: %O', error)
+
+      this.logger.debug('Response error: %O', error.response)
 
       response.setHeader('content-type', error.response.header['content-type'])
       response.status(error.status).send(error.response.text)

@@ -37,17 +37,11 @@ export class AuthMiddleware extends BaseMiddleware {
 
       this.logger.debug('Auth validation response: %O', authResponse.body)
 
-      if (!authResponse.ok) {
-        response.setHeader('content-type', authResponse.header['content-type'])
-        response.status(authResponse.status).send(authResponse.text)
-
-        return
-      }
-
       response.locals.authToken = authResponse.body.authToken
     } catch (error) {
       this.logger.error('Could not pass the request to underlying services')
-      this.logger.debug('Response error: %O', error)
+
+      this.logger.debug('Response error: %O', error.response)
 
       response.setHeader('content-type', error.response.header['content-type'])
       response.status(error.status).send(error.response.text)
