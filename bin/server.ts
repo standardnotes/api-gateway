@@ -6,6 +6,7 @@ import '../src/Controller/HealthCheckController'
 import '../src/Controller/v1/SessionsController'
 import '../src/Controller/v1/UsersController'
 import '../src/Controller/v1/ActionsController'
+import '../src/Controller/v1/RevisionsController'
 
 import * as helmet from 'helmet'
 import * as cors from 'cors'
