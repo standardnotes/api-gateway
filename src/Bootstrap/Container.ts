@@ -4,6 +4,9 @@ import { Container } from 'inversify'
 
 import { Env } from './Env'
 import TYPES from './Types'
+import { AuthMiddleware } from '../Controller/AuthMiddleware'
+import { HttpServiceInterface } from '../Service/HttpClientInterface'
+import { HttpService } from '../Service/HttpService'
 
 export class ContainerConfigLoader {
   async load(): Promise<Container> {
@@ -24,14 +27,19 @@ export class ContainerConfigLoader {
     })
     container.bind<winston.Logger>(TYPES.Logger).toConstantValue(logger)
 
+    container.bind<superagent.SuperAgentStatic>(TYPES.HTTPClient).toConstantValue(superagent)
+
     // env vars
     container.bind(TYPES.SYNCING_SERVER_JS_URL).toConstantValue(env.get('SYNCING_SERVER_JS_URL'))
     container.bind(TYPES.SYNCING_SERVER_RUBY_URL).toConstantValue(env.get('SYNCING_SERVER_RUBY_URL'))
     container.bind(TYPES.AUTH_SERVER_URL).toConstantValue(env.get('AUTH_SERVER_URL'))
     container.bind(TYPES.HTTP_CALL_TIMEOUT).toConstantValue(env.get('HTTP_CALL_TIMEOUT'))
 
+    // Middleware
+    container.bind<AuthMiddleware>(TYPES.AuthMiddleware).to(AuthMiddleware)
+
     // Services
-    container.bind<superagent.SuperAgentStatic>(TYPES.HTTPClient).toConstantValue(superagent)
+    container.bind<HttpServiceInterface>(TYPES.HTTPService).to(HttpService)
 
     return container
   }
