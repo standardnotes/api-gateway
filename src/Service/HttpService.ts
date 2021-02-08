@@ -11,13 +11,22 @@ export class HttpService implements HttpServiceInterface {
     @inject(TYPES.HTTPClient) private httpClient: SuperAgentStatic,
     @inject(TYPES.HTTP_CALL_TIMEOUT) private httpCallTimeout: number,
     @inject(TYPES.AUTH_SERVER_URL) private authServerUrl: string,
+    @inject(TYPES.SYNCING_SERVER_JS_URL) private syncingServerUrl: string,
     @inject(TYPES.Logger) private logger: Logger
   ) {
   }
 
+  async callSyncingServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
+    await this.callServer(this.syncingServerUrl, request, response, endpoint, payload)
+  }
+
   async callAuthServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
+    await this.callServer(this.authServerUrl, request, response, endpoint, payload)
+  }
+
+  private async callServer(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
     try {
-      const serviceResponse = await this.httpClient(request.method, `${this.authServerUrl}/${endpoint}`)
+      const serviceResponse = await this.httpClient(request.method, `${serverUrl}/${endpoint}`)
         .timeout(this.httpCallTimeout)
         .set(request.headers)
         .query(request.query)
