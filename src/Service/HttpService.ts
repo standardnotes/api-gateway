@@ -20,6 +20,7 @@ export class HttpService implements HttpServiceInterface {
       const serviceResponse = await this.httpClient(request.method, `${this.authServerUrl}/${endpoint}`)
         .timeout(this.httpCallTimeout)
         .set(request.headers)
+        .query(request.query)
         .send(payload)
 
       response.setHeader('content-type', serviceResponse.headers['content-type'])
