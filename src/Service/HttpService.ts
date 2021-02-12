@@ -29,6 +29,7 @@ export class HttpService implements HttpServiceInterface {
       const serviceRequest = this.httpClient(request.method, `${serverUrl}/${endpoint}`)
         .timeout(this.httpCallTimeout)
         .set(request.headers)
+        .set('Accept', 'application/json')
         .query(request.query)
 
       if (response.locals.authToken) {
@@ -47,7 +48,7 @@ export class HttpService implements HttpServiceInterface {
             permissions: response.locals.permissions,
           }
         },
-        data: serviceResponse.text
+        data: serviceResponse.body
       })
     } catch (error) {
       this.logger.error('Could not pass the request to underlying services')
