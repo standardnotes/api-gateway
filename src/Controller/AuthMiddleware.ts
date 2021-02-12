@@ -1,6 +1,8 @@
+import { Token } from '@standardnotes/auth'
 import { NextFunction, Request, Response } from 'express'
 import { inject, injectable } from 'inversify'
 import { BaseMiddleware } from 'inversify-express-utils'
+import { verify } from 'jsonwebtoken'
 import { SuperAgentStatic } from 'superagent'
 import { Logger } from 'winston'
 import TYPES from '../Bootstrap/Types'
@@ -11,6 +13,7 @@ export class AuthMiddleware extends BaseMiddleware {
     @inject(TYPES.HTTPClient) private httpClient: SuperAgentStatic,
     @inject(TYPES.AUTH_SERVER_URL) private authServerUrl: string,
     @inject(TYPES.HTTP_CALL_TIMEOUT) private httpCallTimeout: number,
+    @inject(TYPES.AUTH_JWT_SECRET) private jwtSecret: string,
     @inject(TYPES.Logger) private logger: Logger
   ) {
     super()
@@ -38,13 +41,18 @@ export class AuthMiddleware extends BaseMiddleware {
       this.logger.debug('Auth validation response: %O', authResponse.body)
 
       response.locals.authToken = authResponse.body.authToken
+
+      const decodedToken = <Token> verify(authResponse.body.authToken, this.jwtSecret, { algorithms: [ 'HS256' ] })
+
+      response.locals.roles = decodedToken.roles
+      response.locals.permissions = decodedToken.permissions
     } catch (error) {
       this.logger.error('Could not pass the request to underlying services')
 
       this.logger.debug('Response error: %O', error.response)
 
-      if (error.response.headers && error.response.headers['content-type']) {
-        response.setHeader('content-type', error.response.headers['content-type'])
+      if (error.response.header && error.response.header['content-type']) {
+        response.setHeader('content-type', error.response.header['content-type'])
       }
       response.status(error.status).send(error.response.body)
 

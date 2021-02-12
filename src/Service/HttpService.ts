@@ -26,21 +26,36 @@ export class HttpService implements HttpServiceInterface {
 
   private async callServer(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
     try {
-      const serviceResponse = await this.httpClient(request.method, `${serverUrl}/${endpoint}`)
+      const serviceRequest = this.httpClient(request.method, `${serverUrl}/${endpoint}`)
         .timeout(this.httpCallTimeout)
         .set(request.headers)
         .query(request.query)
-        .send(payload)
 
-      response.setHeader('content-type', serviceResponse.headers['content-type'])
-      response.status(serviceResponse.status).send(serviceResponse.text)
+      if (response.locals.authToken) {
+        void serviceRequest.set('X-Auth-Token', response.locals.authToken)
+      }
+
+      const serviceResponse = await serviceRequest.send(payload)
+
+      this.logger.debug('Response from underlying server: %O', serviceResponse)
+
+      response.setHeader('content-type', serviceResponse.header['content-type'])
+      response.status(serviceResponse.status).send({
+        meta: {
+          auth: {
+            roles: response.locals.roles,
+            permissions: response.locals.permissions,
+          }
+        },
+        data: serviceResponse.text
+      })
     } catch (error) {
       this.logger.error('Could not pass the request to underlying services')
 
-      this.logger.debug('Response error: %O', error.response)
+      this.logger.debug('Response error: %O', error.response ?? error)
 
-      if (error.response.headers && error.response.headers['content-type']) {
-        response.setHeader('content-type', error.response.headers['content-type'])
+      if (error.response.header && error.response.header['content-type']) {
+        response.setHeader('content-type', error.response.header['content-type'])
       }
       response.status(error.status).send(error.response.body)
     }
