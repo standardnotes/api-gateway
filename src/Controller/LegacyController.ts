@@ -18,6 +18,6 @@ export class LegacyController extends BaseHttpController {
   async legacyProxyToSyncingServerRuby(request: Request, response: Response): Promise<void> {
     this.logger.debug('Calling legacy syncing server on: %s', request.path)
 
-    await this.httpService.callLegacySyncingServer(request, response, request.path, request.body)
+    await this.httpService.callLegacySyncingServer(request, response, request.path.substring(1), request.body)
   }
 }
