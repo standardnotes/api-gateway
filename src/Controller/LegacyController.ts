@@ -5,7 +5,7 @@ import { Logger } from 'winston'
 import TYPES from '../Bootstrap/Types'
 import { HttpServiceInterface } from '../Service/HttpClientInterface'
 
-@controller('/')
+@controller('')
 export class LegacyController extends BaseHttpController {
   constructor(
     @inject(TYPES.HTTPService) private httpService: HttpServiceInterface,
@@ -14,7 +14,7 @@ export class LegacyController extends BaseHttpController {
     super()
   }
 
-  @all('^(?!/v1.*$).*')
+  @all('*')
   async legacyProxyToSyncingServerRuby(request: Request, response: Response): Promise<void> {
     this.logger.debug('Calling legacy syncing server on: %s', request.path)
 
