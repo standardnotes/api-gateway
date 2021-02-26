@@ -11,13 +11,18 @@ export class HttpService implements HttpServiceInterface {
     @inject(TYPES.HTTPClient) private httpClient: SuperAgentStatic,
     @inject(TYPES.HTTP_CALL_TIMEOUT) private httpCallTimeout: number,
     @inject(TYPES.AUTH_SERVER_URL) private authServerUrl: string,
-    @inject(TYPES.SYNCING_SERVER_JS_URL) private syncingServerUrl: string,
+    @inject(TYPES.SYNCING_SERVER_JS_URL) private syncingServerJsUrl: string,
+    @inject(TYPES.SYNCING_SERVER_RUBY_URL) private syncingServerRubyUrl: string,
     @inject(TYPES.Logger) private logger: Logger
   ) {
   }
 
   async callSyncingServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
-    await this.callServer(this.syncingServerUrl, request, response, endpoint, payload)
+    await this.callServer(this.syncingServerJsUrl, request, response, endpoint, payload)
+  }
+
+  async callLegacySyncingServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
+    await this.callServer(this.syncingServerRubyUrl, request, response, endpoint, payload)
   }
 
   async callAuthServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
@@ -26,21 +31,45 @@ export class HttpService implements HttpServiceInterface {
 
   private async callServer(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
     try {
-      const serviceResponse = await this.httpClient(request.method, `${serverUrl}/${endpoint}`)
-        .timeout(this.httpCallTimeout)
-        .set(request.headers)
-        .query(request.query)
-        .send(payload)
+      this.logger.debug(`Calling [${request.method}] ${serverUrl}/${endpoint},
+        headers: ${JSON.stringify(request.headers)},
+        query: ${JSON.stringify(request.query)},
+        payload: ${JSON.stringify(payload)}`)
 
-      response.setHeader('content-type', serviceResponse.headers['content-type'])
-      response.status(serviceResponse.status).send(serviceResponse.text)
+      const headers = request.headers
+      delete headers.host
+
+      const serviceRequest = this.httpClient(request.method, `${serverUrl}/${endpoint}`)
+        .timeout(this.httpCallTimeout)
+        .set(headers)
+        .set('Accept', 'application/json')
+        .query(request.query)
+
+      if (response.locals.authToken) {
+        void serviceRequest.set('X-Auth-Token', response.locals.authToken)
+      }
+
+      const serviceResponse = await serviceRequest.send(payload)
+
+      this.logger.debug('Response from underlying server: %O', serviceResponse)
+
+      response.setHeader('content-type', serviceResponse.header['content-type'])
+      response.status(serviceResponse.status).send({
+        meta: {
+          auth: {
+            roles: response.locals.roles,
+            permissions: response.locals.permissions,
+          }
+        },
+        data: serviceResponse.body
+      })
     } catch (error) {
       this.logger.error('Could not pass the request to underlying services')
 
-      this.logger.debug('Response error: %O', error.response)
+      this.logger.debug('Response error: %O', error.response ?? error)
 
-      if (error.response.headers && error.response.headers['content-type']) {
-        response.setHeader('content-type', error.response.headers['content-type'])
+      if (error.response.header && error.response.header['content-type']) {
+        response.setHeader('content-type', error.response.header['content-type'])
       }
       response.status(error.status).send(error.response.body)
     }

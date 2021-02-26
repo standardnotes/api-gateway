@@ -2,6 +2,7 @@ import 'reflect-metadata'
 
 import './tracer'
 
+import '../src/Controller/LegacyController'
 import '../src/Controller/HealthCheckController'
 import '../src/Controller/v1/SessionsController'
 import '../src/Controller/v1/UsersController'
