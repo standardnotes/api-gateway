@@ -36,12 +36,13 @@ export class HttpService implements HttpServiceInterface {
         query: ${JSON.stringify(request.query)},
         payload: ${JSON.stringify(payload)}`)
 
+      const headers = request.headers
+      delete headers.host
+
       const serviceRequest = this.httpClient(request.method, `${serverUrl}/${endpoint}`)
         .timeout(this.httpCallTimeout)
-        .set(request.headers)
-        .set('X-Forwarded-For', [...new Set(request.header('X-Forwarded-For')?.split(','))].join(','))
+        .set(headers)
         .set('Accept', 'application/json')
-        .retry(1, () => false)
         .query(request.query)
 
       if (response.locals.authToken) {
