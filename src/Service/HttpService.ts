@@ -39,7 +39,7 @@ export class HttpService implements HttpServiceInterface {
       const serviceRequest = this.httpClient(request.method, `${serverUrl}/${endpoint}`)
         .timeout(this.httpCallTimeout)
         .set(request.headers)
-        .set('X-Forwarded-For', [...new Set(request.header('X-Forwarded-For'))].join(','))
+        .set('X-Forwarded-For', [...new Set(request.header('X-Forwarded-For')?.split(','))].join(','))
         .set('Accept', 'application/json')
         .retry(1, () => false)
         .query(request.query)
