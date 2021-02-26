@@ -31,6 +31,8 @@ export class HttpService implements HttpServiceInterface {
 
   private async callServer(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
     try {
+      this.logger.debug(`X-Forwarded-For: ${request.header('X-Forwarded-For')}`)
+
       const serviceRequest = this.httpClient(request.method, `${serverUrl}/${endpoint}`)
         .timeout(this.httpCallTimeout)
         .set(request.headers)
