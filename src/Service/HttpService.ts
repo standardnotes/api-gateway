@@ -31,12 +31,17 @@ export class HttpService implements HttpServiceInterface {
 
   private async callServer(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
     try {
-      this.logger.debug(`Calling [${request.method}] ${serverUrl}/${endpoint}, headers: ${request.headers}, query: ${request.query}, payload: ${payload}`)
+      this.logger.debug(`Calling [${request.method}] ${serverUrl}/${endpoint},
+        headers: ${JSON.stringify(request.headers)},
+        query: ${JSON.stringify(request.query)},
+        payload: ${JSON.stringify(payload)}`)
 
       const serviceRequest = this.httpClient(request.method, `${serverUrl}/${endpoint}`)
         .timeout(this.httpCallTimeout)
         .set(request.headers)
+        .set('X-Forwarded-For', [...new Set(request.header('X-Forwarded-For'))].join(','))
         .set('Accept', 'application/json')
+        .retry(1, () => false)
         .query(request.query)
 
       if (response.locals.authToken) {
