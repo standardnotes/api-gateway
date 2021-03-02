@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { inject, injectable } from 'inversify'
-import { SuperAgentStatic } from 'superagent'
+import { SuperAgentStatic, Response as SuperAgentResponse } from 'superagent'
 import { Logger } from 'winston'
 import TYPES from '../Bootstrap/Types'
 import { HttpServiceInterface } from './HttpClientInterface'
@@ -22,14 +22,14 @@ export class HttpService implements HttpServiceInterface {
   }
 
   async callLegacySyncingServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
-    await this.callServer(this.syncingServerRubyUrl, request, response, endpoint, payload)
+    await this.callServerWithLegacyFormat(this.syncingServerRubyUrl, request, response, endpoint, payload)
   }
 
   async callAuthServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
     await this.callServer(this.authServerUrl, request, response, endpoint, payload)
   }
 
-  private async callServer(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
+  private async getServerResponse(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<SuperAgentResponse | undefined> {
     try {
       this.logger.debug(`Calling [${request.method}] ${serverUrl}/${endpoint},
         headers: ${JSON.stringify(request.headers)},
@@ -49,20 +49,7 @@ export class HttpService implements HttpServiceInterface {
         void serviceRequest.set('X-Auth-Token', response.locals.authToken)
       }
 
-      const serviceResponse = await serviceRequest.send(payload)
-
-      this.logger.debug('Response from underlying server: %O', serviceResponse)
-
-      response.setHeader('content-type', serviceResponse.header['content-type'])
-      response.status(serviceResponse.status).send({
-        meta: {
-          auth: {
-            roles: response.locals.roles,
-            permissions: response.locals.permissions,
-          }
-        },
-        data: serviceResponse.body
-      })
+      return serviceRequest.send(payload)
     } catch (error) {
       this.logger.error('Could not pass the request to underlying services')
 
@@ -73,5 +60,41 @@ export class HttpService implements HttpServiceInterface {
       }
       response.status(error.status).send(error.response.body)
     }
+
+    return
+  }
+
+  private async callServer(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
+    const serviceResponse = await this.getServerResponse(serverUrl, request, response, endpoint, payload)
+
+    this.logger.debug('Response from underlying server: %O', serviceResponse)
+
+    if (!serviceResponse) {
+      return
+    }
+
+    response.setHeader('content-type', serviceResponse.header['content-type'])
+    response.status(serviceResponse.status).send({
+      meta: {
+        auth: {
+          roles: response.locals.roles,
+          permissions: response.locals.permissions,
+        }
+      },
+      data: serviceResponse.body
+    })
+  }
+
+  private async callServerWithLegacyFormat(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
+    const serviceResponse = await this.getServerResponse(serverUrl, request, response, endpoint, payload)
+
+    this.logger.debug('Response from underlying legacy server: %O', serviceResponse)
+
+    if (!serviceResponse) {
+      return
+    }
+
+    response.setHeader('content-type', serviceResponse.header['content-type'])
+    response.status(serviceResponse.status).send(serviceResponse.body)
   }
 }
