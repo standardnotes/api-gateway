@@ -26,4 +26,9 @@ export class ActionsController extends BaseHttpController {
   async logout(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, 'auth/sign_out', request.body)
   }
+
+  @httpGet('/auth/methods')
+  async methods(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, 'auth/methods', request.body)
+  }
 }
