@@ -12,7 +12,6 @@ export class HttpService implements HttpServiceInterface {
     @inject(TYPES.HTTP_CALL_TIMEOUT) private httpCallTimeout: number,
     @inject(TYPES.AUTH_SERVER_URL) private authServerUrl: string,
     @inject(TYPES.SYNCING_SERVER_JS_URL) private syncingServerJsUrl: string,
-    @inject(TYPES.SYNCING_SERVER_RUBY_URL) private syncingServerRubyUrl: string,
     @inject(TYPES.Logger) private logger: Logger
   ) {
   }
@@ -22,7 +21,7 @@ export class HttpService implements HttpServiceInterface {
   }
 
   async callLegacySyncingServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
-    await this.callServerWithLegacyFormat(this.syncingServerRubyUrl, request, response, endpoint, payload)
+    await this.callServerWithLegacyFormat(this.syncingServerJsUrl, request, response, endpoint, payload)
   }
 
   async callAuthServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
