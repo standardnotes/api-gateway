@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { inject } from 'inversify'
-import { BaseHttpController, controller, httpPost } from 'inversify-express-utils'
+import { BaseHttpController, controller, httpGet, httpPost } from 'inversify-express-utils'
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
 
@@ -17,8 +17,18 @@ export class ActionsController extends BaseHttpController {
     await this.httpService.callAuthServer(request, response, 'auth/sign_in', request.body)
   }
 
+  @httpGet('/login-params')
+  async loginParams(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, 'auth/params', request.body)
+  }
+
   @httpPost('/logout', TYPES.AuthMiddleware)
   async logout(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, 'auth/sign_out', request.body)
+  }
+
+  @httpGet('/auth/methods')
+  async methods(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, 'auth/methods', request.body)
   }
 }

@@ -31,7 +31,6 @@ export class ContainerConfigLoader {
 
     // env vars
     container.bind(TYPES.SYNCING_SERVER_JS_URL).toConstantValue(env.get('SYNCING_SERVER_JS_URL'))
-    container.bind(TYPES.SYNCING_SERVER_RUBY_URL).toConstantValue(env.get('SYNCING_SERVER_RUBY_URL'))
     container.bind(TYPES.AUTH_SERVER_URL).toConstantValue(env.get('AUTH_SERVER_URL'))
     container.bind(TYPES.HTTP_CALL_TIMEOUT).toConstantValue(env.get('HTTP_CALL_TIMEOUT'))
     container.bind(TYPES.AUTH_JWT_SECRET).toConstantValue(env.get('AUTH_JWT_SECRET'))

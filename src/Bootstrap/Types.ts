@@ -3,7 +3,6 @@ const TYPES = {
   HTTPClient: Symbol.for('HTTPClient'),
   // env vars
   SYNCING_SERVER_JS_URL: Symbol.for('SYNCING_SERVER_JS_URL'),
-  SYNCING_SERVER_RUBY_URL: Symbol.for('SYNCING_SERVER_RUBY_URL'),
   AUTH_SERVER_URL: Symbol.for('AUTH_SERVER_URL'),
   HTTP_CALL_TIMEOUT: Symbol.for('HTTP_CALL_TIMEOUT'),
   AUTH_JWT_SECRET: Symbol.for('AUTH_JWT_SECRET'),
