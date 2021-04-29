@@ -5,6 +5,10 @@ ARG GID=1001
 
 RUN addgroup -S apigateway -g $GID && adduser -D -S apigateway -G apigateway -u $UID
 
+RUN apk add --update --no-cache \
+    alpine-sdk \
+    python
+
 WORKDIR /var/www
 
 RUN chown -R $UID:$GID .
