@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { inject } from 'inversify'
-import { BaseHttpController, controller, httpGet, httpPatch, httpPost, httpPut } from 'inversify-express-utils'
+import { BaseHttpController, controller, httpDelete, httpGet, httpPatch, httpPost, httpPut } from 'inversify-express-utils'
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
 
@@ -30,5 +30,15 @@ export class UsersController extends BaseHttpController {
   @httpPost('/')
   async register(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, 'auth', request.body)
+  }
+
+  @httpPut('/:userUuid/settings', TYPES.AuthMiddleware)
+  async putSetting(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, `/users/${request.params.userUuid}/settings`)
+  }
+
+  @httpDelete('/:userUuid/settings/:settingName', TYPES.AuthMiddleware)
+  async deleteSetting(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, `/users/${request.params.userUuid}/settings/${request.params.settingName}`)
   }
 }
