@@ -34,11 +34,11 @@ export class UsersController extends BaseHttpController {
 
   @httpPut('/:userUuid/settings', TYPES.AuthMiddleware)
   async putSetting(request: Request, response: Response): Promise<void> {
-    await this.httpService.callAuthServer(request, response, `/users/${request.params.userUuid}/settings`)
+    await this.httpService.callAuthServer(request, response, `users/${request.params.userUuid}/settings`, request.body)
   }
 
   @httpDelete('/:userUuid/settings/:settingName', TYPES.AuthMiddleware)
   async deleteSetting(request: Request, response: Response): Promise<void> {
-    await this.httpService.callAuthServer(request, response, `/users/${request.params.userUuid}/settings/${request.params.settingName}`)
+    await this.httpService.callAuthServer(request, response, `users/${request.params.userUuid}/settings/${request.params.settingName}`, request.body)
   }
 }
