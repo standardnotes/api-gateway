@@ -81,7 +81,10 @@ export class HttpService implements HttpServiceInterface {
       return
     }
 
-    if (serviceResponse.header && serviceResponse.header['content-type']) response.setHeader('content-type', serviceResponse.header['content-type'])
+    if (serviceResponse?.header?.['content-type']) {
+      response.setHeader('content-type', serviceResponse.header['content-type'])
+    }
+
     response.status(serviceResponse.status).send({
       meta: {
         auth: {
@@ -102,7 +105,9 @@ export class HttpService implements HttpServiceInterface {
       return
     }
 
-    if (serviceResponse.header && serviceResponse.header['content-type']) response.setHeader('content-type', serviceResponse.header['content-type'])
+    if (serviceResponse?.header?.['content-type']) {
+      response.setHeader('content-type', serviceResponse.header['content-type'])
+    }
     response.status(serviceResponse.status).send(serviceResponse.body)
   }
 }
