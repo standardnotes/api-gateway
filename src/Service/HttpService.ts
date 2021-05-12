@@ -43,9 +43,18 @@ export class HttpService implements HttpServiceInterface {
         .set(headers)
         .set('Accept', 'application/json')
         .query(request.query)
+        .ok(res => res.status < 500)
 
       if (response.locals.authToken) {
         void serviceRequest.set('X-Auth-Token', response.locals.authToken)
+      }
+
+      if (
+        payload === null ||
+        payload === undefined ||
+        (typeof payload === 'object' && Object.keys(payload).length === 0)
+      ) {
+        return serviceRequest
       }
 
       return serviceRequest.send(payload)
@@ -54,7 +63,7 @@ export class HttpService implements HttpServiceInterface {
 
       this.logger.debug('Response error: %O', error.response ?? error)
 
-      if (error.response.header && error.response.header['content-type']) {
+      if (error.response?.header?.['content-type']) {
         response.setHeader('content-type', error.response.header['content-type'])
       }
       response.status(error.status).send(error.response.body)
@@ -72,7 +81,7 @@ export class HttpService implements HttpServiceInterface {
       return
     }
 
-    response.setHeader('content-type', serviceResponse.header['content-type'])
+    if (serviceResponse.header && serviceResponse.header['content-type']) response.setHeader('content-type', serviceResponse.header['content-type'])
     response.status(serviceResponse.status).send({
       meta: {
         auth: {
@@ -93,7 +102,7 @@ export class HttpService implements HttpServiceInterface {
       return
     }
 
-    response.setHeader('content-type', serviceResponse.header['content-type'])
+    if (serviceResponse.header && serviceResponse.header['content-type']) response.setHeader('content-type', serviceResponse.header['content-type'])
     response.status(serviceResponse.status).send(serviceResponse.body)
   }
 }
