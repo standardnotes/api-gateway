@@ -19,7 +19,7 @@ export class ContainerConfigLoader {
       level: env.get('LOG_LEVEL') || 'info',
       format: winston.format.combine(
         winston.format.splat(),
-        winston.format.json({ space: 2 }),
+        winston.format.json(),
       ),
       transports: [
         new winston.transports.Console({ level: env.get('LOG_LEVEL') || 'info' }),
