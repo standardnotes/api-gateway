@@ -21,6 +21,8 @@ export class AuthMiddleware extends BaseMiddleware {
 
   async handler (request: Request, response: Response, next: NextFunction): Promise<void> {
     if (!request.headers.authorization) {
+      this.logger.debug('AuthMiddleware invalid-auth: !request.headers.authorization')
+
       response.status(401).send({
         error: {
           tag: 'invalid-auth',
@@ -51,7 +53,7 @@ export class AuthMiddleware extends BaseMiddleware {
 
       this.logger.debug('Response error: %O', error.response)
 
-      if (error.response.header && error.response.header['content-type']) {
+      if (error.response.header?.['content-type']) {
         response.setHeader('content-type', error.response.header['content-type'])
       }
       response.status(error.status).send(error.response.body)
