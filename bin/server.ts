@@ -13,7 +13,6 @@ import * as helmet from 'helmet'
 import * as cors from 'cors'
 import { urlencoded, json } from 'express'
 import * as prettyjson from 'prettyjson'
-import * as expressWinston from 'express-winston'
 import * as winston from 'winston'
 
 import { InversifyExpressServer, getRouteInfo } from 'inversify-express-utils'
@@ -51,15 +50,6 @@ void container.load().then(container => {
     app.use(json({ limit: '50mb' }))
     app.use(urlencoded({ extended: true, limit: '50mb', parameterLimit: 5000 }))
     app.use(cors())
-
-    app.use(expressWinston.logger({
-      transports: [
-          new winston.transports.Console({
-              format: winston.format.json(),
-          }),
-      ],
-      ignoreRoute: function (req, _res) { return ['/healthcheck', '/favicon.ico'].indexOf(req.path.replace(/\/$/, '')) >= 0 },
-    }))
   })
 
   const serverInstance = server.build()
