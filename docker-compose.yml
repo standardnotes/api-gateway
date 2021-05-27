@@ -7,7 +7,7 @@ services:
     env_file: .env
     restart: unless-stopped
     ports:
-      - 3001:${PORT}
+      - 3000:${PORT}
     networks:
       standardnotes_proxy:
         aliases:
