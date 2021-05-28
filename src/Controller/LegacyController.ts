@@ -25,7 +25,7 @@ export class LegacyController extends BaseHttpController {
     if (this.shouldBeRedirectedToAuthService(request)) {
       this.logger.debug(`Proxying legacy request to auth for: ${request.method}:${request.path}`)
 
-      await this.httpService.callAuthServer(request, response, <string> this.AUTH_ROUTES.get(`${request.method}:${request.path}`), request.body)
+      await this.httpService.callAuthServerWithLegacyFormat(request, response, <string> this.AUTH_ROUTES.get(`${request.method}:${request.path}`), request.body)
 
       return
     }

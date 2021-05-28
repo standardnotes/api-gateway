@@ -28,6 +28,10 @@ export class HttpService implements HttpServiceInterface {
     await this.callServer(this.authServerUrl, request, response, endpoint, payload)
   }
 
+  async callAuthServerWithLegacyFormat(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
+    await this.callServerWithLegacyFormat(this.authServerUrl, request, response, endpoint, payload)
+  }
+
   private async getServerResponse(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<SuperAgentResponse | undefined> {
     try {
       this.logger.debug(`Calling [${request.method}] ${serverUrl}/${endpoint},
