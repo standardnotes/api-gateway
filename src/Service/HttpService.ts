@@ -54,7 +54,7 @@ export class HttpService implements HttpServiceInterface {
         payload === undefined ||
         (typeof payload === 'object' && Object.keys(payload).length === 0)
       ) {
-        return serviceRequest
+        return serviceRequest.send()
       }
 
       return serviceRequest.send(payload)
