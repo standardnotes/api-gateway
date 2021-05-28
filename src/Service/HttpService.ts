@@ -99,7 +99,7 @@ export class HttpService implements HttpServiceInterface {
   private async callServerWithLegacyFormat(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
     const serviceResponse = await this.getServerResponse(serverUrl, request, response, endpoint, payload)
 
-    this.logger.debug('Response from underlying legacy server: %O', serviceResponse)
+    this.logger.debug('Response body from underlying legacy server: %O', serviceResponse?.body)
 
     if (!serviceResponse) {
       return
