@@ -28,6 +28,10 @@ export class HttpService implements HttpServiceInterface {
     await this.callServer(this.authServerUrl, request, response, endpoint, payload)
   }
 
+  async callAuthServerWithLegacyFormat(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
+    await this.callServerWithLegacyFormat(this.authServerUrl, request, response, endpoint, payload)
+  }
+
   private async getServerResponse(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<SuperAgentResponse | undefined> {
     try {
       this.logger.debug(`Calling [${request.method}] ${serverUrl}/${endpoint},
@@ -75,7 +79,7 @@ export class HttpService implements HttpServiceInterface {
   private async callServer(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
     const serviceResponse = await this.getServerResponse(serverUrl, request, response, endpoint, payload)
 
-    this.logger.debug('Response from underlying server: %O', serviceResponse)
+    this.logger.debug('Response from underlying server: %O', serviceResponse?.body)
 
     if (!serviceResponse) {
       return
@@ -99,7 +103,7 @@ export class HttpService implements HttpServiceInterface {
   private async callServerWithLegacyFormat(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
     const serviceResponse = await this.getServerResponse(serverUrl, request, response, endpoint, payload)
 
-    this.logger.debug('Response from underlying legacy server: %O', serviceResponse)
+    this.logger.debug('Response body from underlying legacy server: %O', serviceResponse?.body)
 
     if (!serviceResponse) {
       return
