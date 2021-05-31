@@ -19,7 +19,8 @@ export class LegacyController extends BaseHttpController {
       ['POST:/auth', 'auth'],
       ['POST:/auth/sign_out', 'auth/sign_out'],
       ['POST:/auth/change_pw', 'auth/change_pw'],
-      ['GET:/sessions', 'sessions']
+      ['GET:/sessions', 'sessions'],
+      ['PATCH:/users/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})', 'users/{uuid}']
     ])
   }
 
@@ -28,7 +29,7 @@ export class LegacyController extends BaseHttpController {
     if (this.shouldBeRedirectedToAuthService(request)) {
       this.logger.debug(`Proxying legacy request to auth for: ${request.method}:${request.path}`)
 
-      await this.httpService.callAuthServerWithLegacyFormat(request, response, <string> this.AUTH_ROUTES.get(`${request.method}:${request.path}`), request.body)
+      await this.httpService.callAuthServerWithLegacyFormat(request, response, this.getPath(request), request.body)
 
       return
     }
@@ -38,7 +39,27 @@ export class LegacyController extends BaseHttpController {
     await this.httpService.callLegacySyncingServer(request, response, request.path.substring(1), request.body)
   }
 
+  private getPath(request: Request): string {
+    for (const key of this.AUTH_ROUTES.keys()) {
+      const regExp = new RegExp(key)
+      const matches = regExp.exec(`${request.method}:${request.path}`)
+      if (matches !== null) {
+        return (<string> this.AUTH_ROUTES.get(key)).replace('{uuid}', matches[1])
+      }
+    }
+
+    throw Error('could not find path for key')
+  }
+
   private shouldBeRedirectedToAuthService(request: Request): boolean {
-    return this.AUTH_ROUTES.has(`${request.method}:${request.path}`)
+    for (const key of this.AUTH_ROUTES.keys()) {
+      const regExp = new RegExp(key)
+      const matches = regExp.test(`${request.method}:${request.path}`)
+      if (matches) {
+        return true
+      }
+    }
+
+    return false
   }
 }
