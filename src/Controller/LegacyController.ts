@@ -16,7 +16,8 @@ export class LegacyController extends BaseHttpController {
     super()
 
     this.AUTH_ROUTES = new Map([
-      ['POST:/auth', 'auth']
+      ['POST:/auth', 'auth'],
+      ['POST:/auth/sign_out', 'auth/sign_out']
     ])
   }
 
