@@ -12,7 +12,6 @@ export class AuthMiddleware extends BaseMiddleware {
   constructor (
     @inject(TYPES.HTTPClient) private httpClient: SuperAgentStatic,
     @inject(TYPES.AUTH_SERVER_URL) private authServerUrl: string,
-    @inject(TYPES.HTTP_CALL_TIMEOUT) private httpCallTimeout: number,
     @inject(TYPES.AUTH_JWT_SECRET) private jwtSecret: string,
     @inject(TYPES.Logger) private logger: Logger
   ) {
@@ -36,7 +35,6 @@ export class AuthMiddleware extends BaseMiddleware {
     try {
       const authResponse = await this.httpClient
         .post(`${this.authServerUrl}/sessions/validate`)
-        .timeout(this.httpCallTimeout)
         .set('Authorization', request.headers.authorization)
         .send()
 
