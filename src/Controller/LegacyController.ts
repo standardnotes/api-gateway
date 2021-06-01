@@ -20,7 +20,10 @@ export class LegacyController extends BaseHttpController {
       ['POST:/auth', 'auth'],
       ['POST:/auth/sign_out', 'auth/sign_out'],
       ['POST:/auth/change_pw', 'auth/change_pw'],
-      ['GET:/sessions', 'sessions']
+      ['GET:/sessions', 'sessions'],
+      ['DELETE:/session', 'session'],
+      ['DELETE:/session/all', 'session/all'],
+      ['POST:/session/refresh', 'session/refresh']
     ])
 
     this.PARAMETRIZED_AUTH_ROUTES = new Map([
