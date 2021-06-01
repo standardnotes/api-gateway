@@ -53,15 +53,18 @@ export class HttpService implements HttpServiceInterface {
         void serviceRequest.set('X-Auth-Token', response.locals.authToken)
       }
 
+      let serviceResponse: SuperAgentResponse
       if (
         payload === null ||
         payload === undefined ||
         (typeof payload === 'object' && Object.keys(payload).length === 0)
       ) {
-        return serviceRequest.send()
+        serviceResponse = await serviceRequest.send()
       }
 
-      return serviceRequest.send(payload)
+      serviceResponse = await serviceRequest.send(payload)
+
+      return serviceResponse
     } catch (error) {
       this.logger.error('Could not pass the request to underlying services')
 
