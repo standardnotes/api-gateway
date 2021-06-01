@@ -8,6 +8,7 @@ import { HttpServiceInterface } from '../Service/HttpClientInterface'
 @controller('')
 export class LegacyController extends BaseHttpController {
   private AUTH_ROUTES: Map<string, string>
+  private PARAMETRIZED_AUTH_ROUTES: Map<string, string>
 
   constructor(
     @inject(TYPES.HTTPService) private httpService: HttpServiceInterface,
@@ -21,6 +22,10 @@ export class LegacyController extends BaseHttpController {
       ['POST:/auth/change_pw', 'auth/change_pw'],
       ['GET:/sessions', 'sessions']
     ])
+
+    this.PARAMETRIZED_AUTH_ROUTES = new Map([
+      ['PATCH:/users/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})', 'users/{uuid}']
+    ])
   }
 
   @all('*')
@@ -28,7 +33,7 @@ export class LegacyController extends BaseHttpController {
     if (this.shouldBeRedirectedToAuthService(request)) {
       this.logger.debug(`Proxying legacy request to auth for: ${request.method}:${request.path}`)
 
-      await this.httpService.callAuthServerWithLegacyFormat(request, response, <string> this.AUTH_ROUTES.get(`${request.method}:${request.path}`), request.body)
+      await this.httpService.callAuthServerWithLegacyFormat(request, response, this.getPath(request), request.body)
 
       return
     }
@@ -38,7 +43,39 @@ export class LegacyController extends BaseHttpController {
     await this.httpService.callLegacySyncingServer(request, response, request.path.substring(1), request.body)
   }
 
+  private getPath(request: Request): string {
+    const requestKey = `${request.method}:${request.path}`
+
+    if (this.AUTH_ROUTES.has(requestKey)) {
+      return <string> this.AUTH_ROUTES.get(requestKey)
+    }
+
+    for (const key of this.AUTH_ROUTES.keys()) {
+      const regExp = new RegExp(key)
+      const matches = regExp.exec(requestKey)
+      if (matches !== null) {
+        return (<string> this.AUTH_ROUTES.get(key)).replace('{uuid}', matches[1])
+      }
+    }
+
+    throw Error('could not find path for key')
+  }
+
   private shouldBeRedirectedToAuthService(request: Request): boolean {
-    return this.AUTH_ROUTES.has(`${request.method}:${request.path}`)
+    const requestKey = `${request.method}:${request.path}`
+
+    if (this.AUTH_ROUTES.has(requestKey)) {
+      return true
+    }
+
+    for (const key of this.PARAMETRIZED_AUTH_ROUTES.keys()) {
+      const regExp = new RegExp(key)
+      const matches = regExp.test(requestKey)
+      if (matches) {
+        return true
+      }
+    }
+
+    return false
   }
 }
