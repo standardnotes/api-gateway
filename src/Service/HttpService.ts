@@ -9,7 +9,6 @@ import { HttpServiceInterface } from './HttpClientInterface'
 export class HttpService implements HttpServiceInterface {
   constructor(
     @inject(TYPES.HTTPClient) private httpClient: SuperAgentStatic,
-    @inject(TYPES.HTTP_CALL_TIMEOUT) private httpCallTimeout: number,
     @inject(TYPES.AUTH_SERVER_URL) private authServerUrl: string,
     @inject(TYPES.SYNCING_SERVER_JS_URL) private syncingServerJsUrl: string,
     @inject(TYPES.Logger) private logger: Logger
@@ -43,7 +42,6 @@ export class HttpService implements HttpServiceInterface {
       delete headers.host
 
       const serviceRequest = this.httpClient(request.method, `${serverUrl}/${endpoint}`)
-        .timeout(this.httpCallTimeout)
         .set(headers)
         .set('Accept', 'application/json')
         .query(request.query)
