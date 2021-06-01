@@ -66,14 +66,14 @@ export class HttpService implements HttpServiceInterface {
 
       return serviceResponse
     } catch (error) {
-      this.logger.error('Could not pass the request to underlying services')
+      this.logger.error(`Could not pass the request to underlying services: ${error.response ? error.response.body : error.message}`)
 
       this.logger.debug('Response error: %O', error.response ?? error)
 
       if (error.response?.header?.['content-type']) {
         response.setHeader('content-type', error.response.header['content-type'])
       }
-      response.status(error.status).send(error.response.body)
+      response.status(error.status).send(error.response ? error.response.body : error.message)
     }
 
     return
