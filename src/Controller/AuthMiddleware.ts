@@ -36,9 +36,17 @@ export class AuthMiddleware extends BaseMiddleware {
       const authResponse = await this.httpClient
         .post(`${this.authServerUrl}/sessions/validate`)
         .set('Authorization', request.headers.authorization)
+        .ok(res => res.status < 500)
         .send()
 
-      this.logger.debug('Auth validation response: %O', authResponse.body)
+      this.logger.debug('Auth validation status %s response: %O', authResponse.status, authResponse.body)
+
+      if (authResponse.status > 200) {
+        response.setHeader('content-type', authResponse.header['content-type'])
+        response.status(authResponse.status).send(authResponse.body)
+
+        return
+      }
 
       response.locals.authToken = authResponse.body.authToken
 
