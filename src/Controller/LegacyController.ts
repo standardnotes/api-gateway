@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { inject } from 'inversify'
-import { controller, all, BaseHttpController } from 'inversify-express-utils'
+import { controller, all, BaseHttpController, httpPost, httpGet } from 'inversify-express-utils'
 import { Logger } from 'winston'
 import TYPES from '../Bootstrap/Types'
 import { HttpServiceInterface } from '../Service/HttpClientInterface'
@@ -31,6 +31,21 @@ export class LegacyController extends BaseHttpController {
     this.PARAMETRIZED_AUTH_ROUTES = new Map([
       ['PATCH:/users/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})', 'users/{uuid}']
     ])
+  }
+
+  @httpPost('/items/sync', TYPES.AuthMiddleware)
+  async legacyItemsSync(request: Request, response: Response): Promise<void> {
+    await this.httpService.callLegacySyncingServer(request, response, request.path.substring(1), request.body)
+  }
+
+  @httpGet('/items/:item_id/revisions', TYPES.AuthMiddleware)
+  async legacyGetRevisions(request: Request, response: Response): Promise<void> {
+    await this.httpService.callLegacySyncingServer(request, response, request.path.substring(1), request.body)
+  }
+
+  @httpGet('/items/:item_id/revisions/:id', TYPES.AuthMiddleware)
+  async legacyGetRevision(request: Request, response: Response): Promise<void> {
+    await this.httpService.callLegacySyncingServer(request, response, request.path.substring(1), request.body)
   }
 
   @all('*')
