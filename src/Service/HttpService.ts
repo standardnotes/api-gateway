@@ -71,7 +71,7 @@ export class HttpService implements HttpServiceInterface {
       if (error.response?.header?.['content-type']) {
         response.setHeader('content-type', error.response.header['content-type'])
       }
-      response.status(error.status).send(error.response ? error.response.body : error.message)
+      response.status(error.status || 500).send(error.response ? error.response.body : error.message)
     }
 
     return
