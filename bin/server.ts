@@ -8,10 +8,11 @@ import '../src/Controller/v1/SessionsController'
 import '../src/Controller/v1/UsersController'
 import '../src/Controller/v1/ActionsController'
 import '../src/Controller/v1/RevisionsController'
+import '../src/Controller/v1/ItemsController'
 
 import * as helmet from 'helmet'
 import * as cors from 'cors'
-import { urlencoded, json } from 'express'
+import { urlencoded, json, Request, Response, NextFunction } from 'express'
 import * as prettyjson from 'prettyjson'
 import * as winston from 'winston'
 
@@ -50,6 +51,9 @@ void container.load().then(container => {
     app.use(json({ limit: '50mb' }))
     app.use(urlencoded({ extended: true, limit: '50mb', parameterLimit: 5000 }))
     app.use(cors())
+    app.use((_error: unknown, _request: Request, response: Response, _next: NextFunction) => {
+      response.status(500).send({ error: 'Request failed.' })
+    })
   })
 
   const serverInstance = server.build()
