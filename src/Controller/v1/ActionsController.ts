@@ -22,7 +22,7 @@ export class ActionsController extends BaseHttpController {
     await this.httpService.callAuthServer(request, response, 'auth/params', request.body)
   }
 
-  @httpPost('/logout', TYPES.AuthMiddleware)
+  @httpPost('/logout')
   async logout(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, 'auth/sign_out', request.body)
   }
