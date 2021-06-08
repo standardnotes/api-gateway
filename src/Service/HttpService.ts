@@ -11,6 +11,7 @@ export class HttpService implements HttpServiceInterface {
     @inject(TYPES.HTTPClient) private httpClient: SuperAgentStatic,
     @inject(TYPES.AUTH_SERVER_URL) private authServerUrl: string,
     @inject(TYPES.SYNCING_SERVER_JS_URL) private syncingServerJsUrl: string,
+    @inject(TYPES.PAYMENTS_SERVER_URL) private paymentsServerUrl: string,
     @inject(TYPES.Logger) private logger: Logger
   ) {
   }
@@ -25,6 +26,10 @@ export class HttpService implements HttpServiceInterface {
 
   async callAuthServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
     await this.callServer(this.authServerUrl, request, response, endpoint, payload)
+  }
+
+  async callPaymentsServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
+    await this.callServer(this.paymentsServerUrl, request, response, endpoint, payload)
   }
 
   async callAuthServerWithLegacyFormat(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
