@@ -29,7 +29,7 @@ export class HttpService implements HttpServiceInterface {
   }
 
   async callPaymentsServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
-    await this.callServer(this.paymentsServerUrl, request, response, endpoint, payload)
+    await this.callServerWithLegacyFormat(this.paymentsServerUrl, request, response, endpoint, payload)
   }
 
   async callAuthServerWithLegacyFormat(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
