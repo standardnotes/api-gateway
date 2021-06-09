@@ -4,6 +4,7 @@ const TYPES = {
   // env vars
   SYNCING_SERVER_JS_URL: Symbol.for('SYNCING_SERVER_JS_URL'),
   AUTH_SERVER_URL: Symbol.for('AUTH_SERVER_URL'),
+  PAYMENTS_SERVER_URL: Symbol.for('PAYMENTS_SERVER_URL'),
   AUTH_JWT_SECRET: Symbol.for('AUTH_JWT_SECRET'),
   // Middleware
   AuthMiddleware: Symbol.for('AuthMiddleware'),
