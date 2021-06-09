@@ -29,6 +29,11 @@ export class HttpService implements HttpServiceInterface {
   }
 
   async callPaymentsServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
+    if (!this.paymentsServerUrl === undefined) {
+      this.logger.debug('Payments Server URL not defined. Skipped request to Payments API.')
+
+      return
+    }
     await this.callServerWithLegacyFormat(this.paymentsServerUrl, request, response, endpoint, payload)
   }
 
