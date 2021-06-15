@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { inject } from 'inversify'
-import { BaseHttpController, controller, httpDelete, httpGet, httpPost } from 'inversify-express-utils'
+import { all, BaseHttpController, controller, httpDelete, httpGet, httpPost } from 'inversify-express-utils'
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
 
@@ -90,5 +90,10 @@ export class PaymentsController extends BaseHttpController {
   @httpPost('/email_subscriptions/:token/unsubscribe')
   async subscriptionsUnsubscribe(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, `api/email_subscriptions/${request.params.token}/unsubscribe`, request.body)
+  }
+
+  @all('/pro_users(/*)?')
+  async proUsers(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, `api/${request.path}`, request.body)
   }
 }
