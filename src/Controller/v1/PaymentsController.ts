@@ -96,4 +96,9 @@ export class PaymentsController extends BaseHttpController {
   async proUsers(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, `api/${request.path}`, request.body)
   }
+
+  @all('/refunds')
+  async refunds(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'api/refunds', request.body)
+  }
 }
