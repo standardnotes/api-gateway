@@ -42,7 +42,7 @@ export class PaymentsController extends BaseHttpController {
     await this.httpService.callPaymentsServer(request, response, 'api/extensions', request.body)
   }
 
-  @httpGet('/subscriptions')
+  @all('/subscriptions')
   async subscriptions(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, 'api/subscriptions', request.body)
   }
