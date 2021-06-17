@@ -19,6 +19,7 @@ export class UsersController extends BaseHttpController {
 
   @httpPut('/:userId/password', TYPES.AuthMiddleware)
   async changePassword(request: Request, response: Response): Promise<void> {
+    request.method = 'POST'
     await this.httpService.callAuthServer(request, response, 'auth/change_pw', request.body)
   }
 
