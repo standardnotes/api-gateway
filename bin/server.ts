@@ -10,6 +10,7 @@ import '../src/Controller/v1/ActionsController'
 import '../src/Controller/v1/RevisionsController'
 import '../src/Controller/v1/ItemsController'
 import '../src/Controller/v1/PaymentsController'
+import '../src/Controller/v1/WebSocketsController'
 
 import * as helmet from 'helmet'
 import * as cors from 'cors'
