@@ -12,6 +12,11 @@ export class WebSocketsController extends BaseHttpController {
     super()
   }
 
+  @httpPost('/connect')
+  async connect(_request: Request, response: Response): Promise<void> {
+    response.status(200).send('OK')
+  }
+
   @httpPost('/')
   async createWebSocketConnection(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, 'sockets', request.body)
