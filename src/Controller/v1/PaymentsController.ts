@@ -62,6 +62,11 @@ export class PaymentsController extends BaseHttpController {
     await this.httpService.callPaymentsServer(request, response, 'api/reset', request.body)
   }
 
+  @httpPost('/user-registration')
+  async userRegistration(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'admin/events/registration', request.body)
+  }
+
   @httpPost('/students')
   async students(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, 'api/students', request.body)
