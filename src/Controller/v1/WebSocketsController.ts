@@ -14,22 +14,7 @@ export class WebSocketsController extends BaseHttpController {
     super()
   }
 
-  @httpPost('/connect', TYPES.AuthMiddleware)
-  async connect(request: Request, response: Response): Promise<void> {
-    this.logger.debug(`WebSockets connect request:
-      headers: ${JSON.stringify(request.headers)},
-      body: ${JSON.stringify(request.body)}`)
-
-    if (!request.headers.connectionid) {
-      response.status(400).send('Missing connection id in the request')
-
-      return
-    }
-
-    response.status(200).send('OK')
-  }
-
-  @httpPost('/')
+  @httpPost('/', TYPES.AuthMiddleware)
   async createWebSocketConnection(request: Request, response: Response): Promise<void> {
     this.logger.debug(`WebSockets connection persisting request:
       headers: ${JSON.stringify(request.headers)},
