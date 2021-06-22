@@ -14,7 +14,7 @@ export class WebSocketsController extends BaseHttpController {
     super()
   }
 
-  @httpPost('/connect')
+  @httpPost('/connect', TYPES.AuthMiddleware)
   async connect(request: Request, response: Response): Promise<void> {
     this.logger.debug(`WebSockets connect request:
       headers: ${JSON.stringify(request.headers)},
