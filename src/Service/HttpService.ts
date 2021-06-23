@@ -115,14 +115,29 @@ export class HttpService implements HttpServiceInterface {
     const serviceResponse = await this.getServerResponse(serverUrl, request, response, endpoint, payload)
 
     this.logger.debug('Response body from underlying legacy server: %O', serviceResponse?.body)
+    this.logger.debug('Response headers from underlying legacy server: %O', serviceResponse?.headers)
 
     if (!serviceResponse) {
       return
     }
 
-    if (serviceResponse?.header?.['content-type']) {
-      response.setHeader('content-type', serviceResponse.header['content-type'])
-    }
+    /**
+     * A list of headers that will be forwarded to the original request.
+     */
+    const forwardedHeaders = [
+      'access-control-allow-methods',
+      'access-control-allow-origin',
+      'access-control-expose-headers',
+      'authorization',
+      'content-type'
+    ]
+
+    forwardedHeaders.map((headerName) => {
+      const headerValue = serviceResponse?.header?.[headerName]
+      if (headerValue) {
+        response.setHeader(headerName, headerValue)
+      }
+    })
     response.status(serviceResponse.status).send(serviceResponse.body)
   }
 }
