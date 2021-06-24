@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { inject } from 'inversify'
-import { controller, all, BaseHttpController, httpPost, httpGet, results } from 'inversify-express-utils'
+import { controller, all, BaseHttpController, httpPost, httpGet, results, httpDelete } from 'inversify-express-utils'
 import { Logger } from 'winston'
 import TYPES from '../Bootstrap/Types'
 import { HttpServiceInterface } from '../Service/HttpClientInterface'
@@ -50,6 +50,11 @@ export class LegacyController extends BaseHttpController {
 
   @httpGet('/items/mfa/:userUuid')
   async blockedMFARequest(): Promise<results.StatusCodeResult> {
+    return this.statusCode(401)
+  }
+
+  @httpDelete('/items/mfa/:userUuid')
+  async blockedMFARemoveRequest(): Promise<results.StatusCodeResult> {
     return this.statusCode(401)
   }
 
