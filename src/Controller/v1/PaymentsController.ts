@@ -47,6 +47,11 @@ export class PaymentsController extends BaseHttpController {
     await this.httpService.callPaymentsServer(request, response, 'api/subscriptions', request.body)
   }
 
+  @httpPost('/subscriptions/webhook')
+  async subscriptionsWebhook(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'api/subscriptions/webhook', request.body)
+  }
+
   @httpGet('/reset/validate')
   async validateReset(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, 'api/reset/validate', request.body)
