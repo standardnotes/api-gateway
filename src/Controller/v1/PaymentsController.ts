@@ -42,19 +42,9 @@ export class PaymentsController extends BaseHttpController {
     await this.httpService.callPaymentsServer(request, response, 'api/extensions', request.body)
   }
 
-  @all('/subscriptions')
+  @all('/subscriptions(/*)?')
   async subscriptions(request: Request, response: Response): Promise<void> {
-    await this.httpService.callPaymentsServer(request, response, 'api/subscriptions', request.body)
-  }
-
-  @httpPost('/subscriptions/webhook')
-  async subscriptionsWebhook(request: Request, response: Response): Promise<void> {
-    await this.httpService.callPaymentsServer(request, response, 'api/subscriptions/webhook', request.body)
-  }
-
-  @httpPost('/subscriptions/coins_webhook')
-  async subscriptionsCoinsWebhook(request: Request, response: Response): Promise<void> {
-    await this.httpService.callPaymentsServer(request, response, 'api/subscriptions/coins_webhook', request.body)
+    await this.httpService.callPaymentsServer(request, response, request.path.replace('v1', 'api'), request.body)
   }
 
   @httpGet('/reset/validate')
