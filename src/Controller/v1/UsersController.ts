@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { inject } from 'inversify'
-import { BaseHttpController, controller, httpDelete, httpGet, httpPatch, httpPost, httpPut, results } from 'inversify-express-utils'
+import { all, BaseHttpController, controller, httpDelete, httpGet, httpPatch, httpPost, httpPut, results } from 'inversify-express-utils'
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
 
@@ -28,7 +28,7 @@ export class UsersController extends BaseHttpController {
     await this.httpService.callAuthServer(request, response, 'auth/params')
   }
 
-  @httpGet('/:userId/mfa', TYPES.AuthMiddleware)
+  @all('/:userId/mfa', TYPES.AuthMiddleware)
   async blockMFA(): Promise<results.StatusCodeResult> {
     return this.statusCode(401)
   }
