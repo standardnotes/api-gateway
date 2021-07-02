@@ -121,23 +121,12 @@ export class HttpService implements HttpServiceInterface {
       return
     }
 
-    /**
-     * A list of headers that will be forwarded to the original request.
-     */
-    const forwardedHeaders = [
-      'access-control-allow-methods',
-      'access-control-allow-origin',
-      'access-control-expose-headers',
-      'authorization',
-      'content-type'
-    ]
-
-    forwardedHeaders.map((headerName) => {
-      const headerValue = serviceResponse?.header?.[headerName]
-      if (headerValue) {
-        response.setHeader(headerName, headerValue)
+    if (serviceResponse.header) {
+      for (const [key, value] of Object.entries(serviceResponse.header)) {
+        response.setHeader(key, value as string)
       }
-    })
+    }
+
     response.status(serviceResponse.status).send(serviceResponse.body)
   }
 }
