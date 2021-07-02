@@ -29,7 +29,7 @@ export class SessionsController extends BaseHttpController {
     await this.httpService.callAuthServer(request, response, 'session/all')
   }
 
-  @httpPost('/refresh', TYPES.AuthMiddleware)
+  @httpPost('/refresh')
   async refreshSession(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, 'session/refresh', request.body)
   }
