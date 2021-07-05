@@ -50,7 +50,6 @@ export class HttpService implements HttpServiceInterface {
 
       const headers = request.headers
       delete headers.host
-      delete headers['content-length']
 
       const serviceRequest = this.httpClient(request.method, `${serverUrl}/${endpoint}`)
         .set(headers)
@@ -69,9 +68,9 @@ export class HttpService implements HttpServiceInterface {
         (typeof payload === 'object' && Object.keys(payload).length === 0)
       ) {
         serviceResponse = await serviceRequest.send()
-      } else {
-        serviceResponse = await serviceRequest.send(payload)
       }
+
+      serviceResponse = await serviceRequest.send(payload)
 
       return serviceResponse
     } catch (error) {
