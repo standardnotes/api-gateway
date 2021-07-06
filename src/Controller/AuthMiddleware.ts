@@ -34,7 +34,7 @@ export class AuthMiddleware extends BaseMiddleware {
 
     try {
       const authResponse = await this.httpClient.request({
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Authorization': request.headers.authorization,
           'Accept': 'application/json',
