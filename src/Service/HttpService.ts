@@ -1,6 +1,6 @@
+import { AxiosInstance, AxiosResponse, Method } from 'axios'
 import { Request, Response } from 'express'
 import { inject, injectable } from 'inversify'
-import { SuperAgentStatic, Response as SuperAgentResponse } from 'superagent'
 import { Logger } from 'winston'
 import TYPES from '../Bootstrap/Types'
 import { HttpServiceInterface } from './HttpClientInterface'
@@ -8,7 +8,7 @@ import { HttpServiceInterface } from './HttpClientInterface'
 @injectable()
 export class HttpService implements HttpServiceInterface {
   constructor(
-    @inject(TYPES.HTTPClient) private httpClient: SuperAgentStatic,
+    @inject(TYPES.HTTPClient) private httpClient: AxiosInstance,
     @inject(TYPES.AUTH_SERVER_URL) private authServerUrl: string,
     @inject(TYPES.SYNCING_SERVER_JS_URL) private syncingServerJsUrl: string,
     @inject(TYPES.PAYMENTS_SERVER_URL) private paymentsServerUrl: string,
@@ -41,7 +41,7 @@ export class HttpService implements HttpServiceInterface {
     await this.callServerWithLegacyFormat(this.authServerUrl, request, response, endpoint, payload)
   }
 
-  private async getServerResponse(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<SuperAgentResponse | undefined> {
+  private async getServerResponse(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<AxiosResponse | undefined> {
     try {
       this.logger.debug(`Calling [${request.method}] ${serverUrl}/${endpoint},
         headers: ${JSON.stringify(request.headers)},
@@ -52,26 +52,18 @@ export class HttpService implements HttpServiceInterface {
       delete headers.host
       delete headers['content-length']
 
-      const serviceRequest = this.httpClient(request.method, `${serverUrl}/${endpoint}`)
-        .set(headers)
-        .set('Accept', 'application/json')
-        .query(request.query)
-        .ok(res => res.status < 500)
-
       if (response.locals.authToken) {
-        void serviceRequest.set('X-Auth-Token', response.locals.authToken)
+        headers['X-Auth-Token'] = response.locals.authToken
       }
 
-      let serviceResponse: SuperAgentResponse
-      if (
-        payload === null ||
-        payload === undefined ||
-        (typeof payload === 'object' && Object.keys(payload).length === 0)
-      ) {
-        serviceResponse = await serviceRequest.send()
-      } else {
-        serviceResponse = await serviceRequest.send(payload)
-      }
+      const serviceResponse = await this.httpClient.request({
+        method: request.method as Method,
+        headers,
+        baseURL: serverUrl,
+        url: `/${endpoint}`,
+        data: this.getRequestData(payload),
+        params: request.query
+      })
 
       return serviceResponse
     } catch (error) {
@@ -91,14 +83,14 @@ export class HttpService implements HttpServiceInterface {
   private async callServer(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
     const serviceResponse = await this.getServerResponse(serverUrl, request, response, endpoint, payload)
 
-    this.logger.debug('Response from underlying server: %O', serviceResponse?.body)
+    this.logger.debug('Response from underlying server: %O', serviceResponse?.data)
 
     if (!serviceResponse) {
       return
     }
 
-    if (serviceResponse?.header?.['content-type']) {
-      response.setHeader('content-type', serviceResponse.header['content-type'])
+    if (serviceResponse.headers['content-type']) {
+      response.setHeader('content-type', serviceResponse.headers['content-type'])
     }
 
     response.status(serviceResponse.status).send({
@@ -108,24 +100,21 @@ export class HttpService implements HttpServiceInterface {
           permissions: response.locals.permissions,
         }
       },
-      data: serviceResponse.body
+      data: serviceResponse.data
     })
   }
 
   private async callServerWithLegacyFormat(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
     const serviceResponse = await this.getServerResponse(serverUrl, request, response, endpoint, payload)
 
-    this.logger.debug('Response body from underlying legacy server: %O', serviceResponse?.body)
+    this.logger.debug('Response body from underlying legacy server: %O', serviceResponse?.data)
     this.logger.debug('Response headers from underlying legacy server: %O', serviceResponse?.headers)
 
     if (!serviceResponse) {
       return
     }
 
-    /**
-     * A list of headers that will be forwarded to the original request.
-     */
-    const forwardedHeaders = [
+    const returnedHeadersFromUnderlyingService = [
       'access-control-allow-methods',
       'access-control-allow-origin',
       'access-control-expose-headers',
@@ -133,12 +122,24 @@ export class HttpService implements HttpServiceInterface {
       'content-type'
     ]
 
-    forwardedHeaders.map((headerName) => {
-      const headerValue = serviceResponse?.header?.[headerName]
+    returnedHeadersFromUnderlyingService.map((headerName) => {
+      const headerValue = serviceResponse.headers[headerName]
       if (headerValue) {
         response.setHeader(headerName, headerValue)
       }
     })
-    response.status(serviceResponse.status).send(serviceResponse.body)
+    response.status(serviceResponse.status).send(serviceResponse.data)
+  }
+
+  private getRequestData(payload: Record<string, unknown> | undefined): Record<string, unknown> | undefined {
+    if (
+      payload === null ||
+      payload === undefined ||
+      (typeof payload === 'object' && Object.keys(payload).length === 0)
+    ) {
+      return undefined
+    }
+
+    return payload
   }
 }
