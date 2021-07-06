@@ -3,14 +3,14 @@ import { NextFunction, Request, Response } from 'express'
 import { inject, injectable } from 'inversify'
 import { BaseMiddleware } from 'inversify-express-utils'
 import { verify } from 'jsonwebtoken'
-import { SuperAgentStatic } from 'superagent'
+import { AxiosInstance } from 'axios'
 import { Logger } from 'winston'
 import TYPES from '../Bootstrap/Types'
 
 @injectable()
 export class AuthMiddleware extends BaseMiddleware {
   constructor (
-    @inject(TYPES.HTTPClient) private httpClient: SuperAgentStatic,
+    @inject(TYPES.HTTPClient) private httpClient: AxiosInstance,
     @inject(TYPES.AUTH_SERVER_URL) private authServerUrl: string,
     @inject(TYPES.AUTH_JWT_SECRET) private jwtSecret: string,
     @inject(TYPES.Logger) private logger: Logger
@@ -33,24 +33,30 @@ export class AuthMiddleware extends BaseMiddleware {
     }
 
     try {
-      const authResponse = await this.httpClient
-        .post(`${this.authServerUrl}/sessions/validate`)
-        .set('Authorization', request.headers.authorization)
-        .ok(res => res.status < 500)
-        .send()
+      const authResponse = await this.httpClient.request({
+        method: 'POST',
+        headers: {
+          'Authorization': request.headers.authorization,
+          'Accept': 'application/json',
+        },
+        validateStatus: (status: number) => {
+          return status >= 200 && status < 500
+        },
+        url: `${this.authServerUrl}/sessions/validate`,
+      })
 
-      this.logger.debug('Auth validation status %s response: %O', authResponse.status, authResponse.body)
+      this.logger.debug('Auth validation status %s response: %O', authResponse.status, authResponse.data)
 
       if (authResponse.status > 200) {
-        response.setHeader('content-type', authResponse.header['content-type'])
-        response.status(authResponse.status).send(authResponse.body)
+        response.setHeader('content-type', authResponse.headers['content-type'])
+        response.status(authResponse.status).send(authResponse.data)
 
         return
       }
 
-      response.locals.authToken = authResponse.body.authToken
+      response.locals.authToken = authResponse.data.authToken
 
-      const decodedToken = <Token> verify(authResponse.body.authToken, this.jwtSecret, { algorithms: [ 'HS256' ] })
+      const decodedToken = <Token> verify(authResponse.data.authToken, this.jwtSecret, { algorithms: [ 'HS256' ] })
 
       response.locals.roles = decodedToken.roles
       response.locals.permissions = decodedToken.permissions
