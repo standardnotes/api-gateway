@@ -62,7 +62,10 @@ export class HttpService implements HttpServiceInterface {
         baseURL: serverUrl,
         url: `/${endpoint}`,
         data: this.getRequestData(payload),
-        params: request.query
+        params: request.query,
+        validateStatus: (status: number) => {
+          return status >= 200 && status < 500
+        },
       })
 
       return serviceResponse
