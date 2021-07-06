@@ -59,8 +59,7 @@ export class HttpService implements HttpServiceInterface {
       const serviceResponse = await this.httpClient.request({
         method: request.method as Method,
         headers,
-        baseURL: serverUrl,
-        url: `/${endpoint}`,
+        url: `${serverUrl}/${endpoint}`,
         data: this.getRequestData(payload),
         params: request.query,
         validateStatus: (status: number) => {

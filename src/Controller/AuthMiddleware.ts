@@ -38,11 +38,10 @@ export class AuthMiddleware extends BaseMiddleware {
         headers: {
           'Authorization': request.headers.authorization,
         },
-        baseURL: this.authServerUrl,
         validateStatus: (status: number) => {
           return status >= 200 && status < 500
         },
-        url: '/sessions/validate',
+        url: `${this.authServerUrl}/sessions/validate`,
       })
 
       this.logger.debug('Auth validation status %s response: %O', authResponse.status, authResponse.data)
