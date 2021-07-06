@@ -37,6 +37,7 @@ export class AuthMiddleware extends BaseMiddleware {
         method: 'GET',
         headers: {
           'Authorization': request.headers.authorization,
+          'Accept': 'application/json',
         },
         validateStatus: (status: number) => {
           return status >= 200 && status < 500
