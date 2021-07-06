@@ -1,5 +1,5 @@
 import * as winston from 'winston'
-import * as superagent from 'superagent'
+import axios, { AxiosInstance } from 'axios'
 import { Container } from 'inversify'
 
 import { Env } from './Env'
@@ -27,7 +27,7 @@ export class ContainerConfigLoader {
     })
     container.bind<winston.Logger>(TYPES.Logger).toConstantValue(logger)
 
-    container.bind<superagent.SuperAgentStatic>(TYPES.HTTPClient).toConstantValue(superagent)
+    container.bind<AxiosInstance>(TYPES.HTTPClient).toConstantValue(axios.create())
 
     // env vars
     container.bind(TYPES.SYNCING_SERVER_JS_URL).toConstantValue(env.get('SYNCING_SERVER_JS_URL'))
