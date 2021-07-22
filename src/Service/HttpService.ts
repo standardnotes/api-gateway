@@ -61,6 +61,8 @@ export class HttpService implements HttpServiceInterface {
         headers,
         url: `${serverUrl}/${endpoint}`,
         data: this.getRequestData(payload),
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
         params: request.query,
         validateStatus: (status: number) => {
           return status >= 200 && status < 500
