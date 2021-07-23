@@ -1,3 +1,5 @@
+import * as http from 'http'
+import * as https from 'https'
 import * as winston from 'winston'
 import axios, { AxiosInstance } from 'axios'
 import { Container } from 'inversify'
@@ -27,7 +29,16 @@ export class ContainerConfigLoader {
     })
     container.bind<winston.Logger>(TYPES.Logger).toConstantValue(logger)
 
-    container.bind<AxiosInstance>(TYPES.HTTPClient).toConstantValue(axios.create())
+    container.bind<AxiosInstance>(TYPES.HTTPClient).toConstantValue(axios.create({
+      httpAgent: new http.Agent({
+        keepAlive: true,
+        maxSockets: Infinity,
+      }),
+      httpsAgent: new https.Agent({
+        keepAlive: true,
+        maxSockets: Infinity,
+      }),
+    }))
 
     // env vars
     container.bind(TYPES.SYNCING_SERVER_JS_URL).toConstantValue(env.get('SYNCING_SERVER_JS_URL'))
