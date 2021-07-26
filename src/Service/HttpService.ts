@@ -123,7 +123,8 @@ export class HttpService implements HttpServiceInterface {
       'access-control-allow-origin',
       'access-control-expose-headers',
       'authorization',
-      'content-type'
+      'content-type',
+      'x-ssjs-version',
     ]
 
     returnedHeadersFromUnderlyingService.map((headerName) => {
