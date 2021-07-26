@@ -88,14 +88,13 @@ export class HttpService implements HttpServiceInterface {
     const serviceResponse = await this.getServerResponse(serverUrl, request, response, endpoint, payload)
 
     this.logger.debug('Response from underlying server: %O', serviceResponse?.data)
+    this.logger.debug('Response headers from underlying legacy server: %O', serviceResponse?.headers)
 
     if (!serviceResponse) {
       return
     }
 
-    if (serviceResponse.headers['content-type']) {
-      response.setHeader('content-type', serviceResponse.headers['content-type'])
-    }
+    this.applyResponseHeaders(serviceResponse, response)
 
     response.status(serviceResponse.status).send({
       meta: {
@@ -118,6 +117,24 @@ export class HttpService implements HttpServiceInterface {
       return
     }
 
+    this.applyResponseHeaders(serviceResponse, response)
+
+    response.status(serviceResponse.status).send(serviceResponse.data)
+  }
+
+  private getRequestData(payload: Record<string, unknown> | undefined): Record<string, unknown> | undefined {
+    if (
+      payload === null ||
+      payload === undefined ||
+      (typeof payload === 'object' && Object.keys(payload).length === 0)
+    ) {
+      return undefined
+    }
+
+    return payload
+  }
+
+  private applyResponseHeaders(serviceResponse: AxiosResponse, response: Response): void {
     const returnedHeadersFromUnderlyingService = [
       'access-control-allow-methods',
       'access-control-allow-origin',
@@ -133,18 +150,5 @@ export class HttpService implements HttpServiceInterface {
         response.setHeader(headerName, headerValue)
       }
     })
-    response.status(serviceResponse.status).send(serviceResponse.data)
-  }
-
-  private getRequestData(payload: Record<string, unknown> | undefined): Record<string, unknown> | undefined {
-    if (
-      payload === null ||
-      payload === undefined ||
-      (typeof payload === 'object' && Object.keys(payload).length === 0)
-    ) {
-      return undefined
-    }
-
-    return payload
   }
 }
