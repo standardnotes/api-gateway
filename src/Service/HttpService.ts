@@ -142,6 +142,7 @@ export class HttpService implements HttpServiceInterface {
       'authorization',
       'content-type',
       'x-ssjs-version',
+      'x-auth-version',
     ]
 
     returnedHeadersFromUnderlyingService.map((headerName) => {
