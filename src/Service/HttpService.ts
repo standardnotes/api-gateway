@@ -88,14 +88,13 @@ export class HttpService implements HttpServiceInterface {
     const serviceResponse = await this.getServerResponse(serverUrl, request, response, endpoint, payload)
 
     this.logger.debug('Response from underlying server: %O', serviceResponse?.data)
+    this.logger.debug('Response headers from underlying legacy server: %O', serviceResponse?.headers)
 
     if (!serviceResponse) {
       return
     }
 
-    if (serviceResponse.headers['content-type']) {
-      response.setHeader('content-type', serviceResponse.headers['content-type'])
-    }
+    this.applyResponseHeaders(serviceResponse, response)
 
     response.status(serviceResponse.status).send({
       meta: {
@@ -118,20 +117,8 @@ export class HttpService implements HttpServiceInterface {
       return
     }
 
-    const returnedHeadersFromUnderlyingService = [
-      'access-control-allow-methods',
-      'access-control-allow-origin',
-      'access-control-expose-headers',
-      'authorization',
-      'content-type'
-    ]
+    this.applyResponseHeaders(serviceResponse, response)
 
-    returnedHeadersFromUnderlyingService.map((headerName) => {
-      const headerValue = serviceResponse.headers[headerName]
-      if (headerValue) {
-        response.setHeader(headerName, headerValue)
-      }
-    })
     response.status(serviceResponse.status).send(serviceResponse.data)
   }
 
@@ -145,5 +132,23 @@ export class HttpService implements HttpServiceInterface {
     }
 
     return payload
+  }
+
+  private applyResponseHeaders(serviceResponse: AxiosResponse, response: Response): void {
+    const returnedHeadersFromUnderlyingService = [
+      'access-control-allow-methods',
+      'access-control-allow-origin',
+      'access-control-expose-headers',
+      'authorization',
+      'content-type',
+      'x-ssjs-version',
+    ]
+
+    returnedHeadersFromUnderlyingService.map((headerName) => {
+      const headerValue = serviceResponse.headers[headerName]
+      if (headerValue) {
+        response.setHeader(headerName, headerValue)
+      }
+    })
   }
 }
