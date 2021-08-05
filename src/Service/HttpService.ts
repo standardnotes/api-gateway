@@ -50,13 +50,6 @@ export class HttpService implements HttpServiceInterface {
         query: ${JSON.stringify(request.query)},
         payload: ${JSON.stringify(payload)}`)
 
-      if (endpoint.indexOf('coins_webhook') !== -1) {
-        this.logger.info(`Calling [${request.method}] ${serverUrl}/${endpoint},
-          headers: ${JSON.stringify(request.headers)},
-          query: ${JSON.stringify(request.query)},
-          payload: ${JSON.stringify(payload)}`)
-      }
-
       const headers = request.headers
       delete headers.host
       delete headers['content-length']
@@ -140,7 +133,7 @@ export class HttpService implements HttpServiceInterface {
       return undefined
     }
 
-    if (request.headers['content-type'] === 'application/x-www-form-urlencoded') {
+    if (request.headers['content-type']?.includes('application/x-www-form-urlencoded')) {
       return qs.stringify(payload)
     }
 
