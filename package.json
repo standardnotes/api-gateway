@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@newrelic/native-metrics": "^6.0.0",
-    "@standardnotes/auth": "^1.1.0",
+    "@standardnotes/auth": "3.4.0",
     "axios": "^0.21.1",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",

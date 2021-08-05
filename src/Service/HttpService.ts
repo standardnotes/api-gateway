@@ -100,7 +100,7 @@ export class HttpService implements HttpServiceInterface {
       meta: {
         auth: {
           roles: response.locals.roles,
-          permissions: response.locals.permissions,
+          features: response.locals.features,
         }
       },
       data: serviceResponse.data

@@ -59,7 +59,7 @@ export class AuthMiddleware extends BaseMiddleware {
       const decodedToken = <Token> verify(authResponse.data.authToken, this.jwtSecret, { algorithms: [ 'HS256' ] })
 
       response.locals.roles = decodedToken.roles
-      response.locals.permissions = decodedToken.permissions
+      response.locals.features = decodedToken.features
     } catch (error) {
       this.logger.error(`Could not pass the request to ${this.authServerUrl}/sessions/validate on underlying service: ${error.response ? JSON.stringify(error.response.body) : error.message}`)
 
