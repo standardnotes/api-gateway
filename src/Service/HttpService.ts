@@ -1,7 +1,9 @@
+import * as qs from 'qs'
 import { AxiosInstance, AxiosResponse, Method } from 'axios'
 import { Request, Response } from 'express'
 import { inject, injectable } from 'inversify'
 import { Logger } from 'winston'
+
 import TYPES from '../Bootstrap/Types'
 import { HttpServiceInterface } from './HttpClientInterface'
 
@@ -60,7 +62,7 @@ export class HttpService implements HttpServiceInterface {
         method: request.method as Method,
         headers,
         url: `${serverUrl}/${endpoint}`,
-        data: this.getRequestData(payload),
+        data: this.getRequestData(request, payload),
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
         params: request.query,
@@ -122,13 +124,17 @@ export class HttpService implements HttpServiceInterface {
     response.status(serviceResponse.status).send(serviceResponse.data)
   }
 
-  private getRequestData(payload: Record<string, unknown> | undefined): Record<string, unknown> | undefined {
+  private getRequestData(request: Request, payload: Record<string, unknown> | undefined): Record<string, unknown> | string | undefined {
     if (
       payload === null ||
       payload === undefined ||
       (typeof payload === 'object' && Object.keys(payload).length === 0)
     ) {
       return undefined
+    }
+
+    if (request.headers['content-type'] === 'application/x-www-form-urlencoded') {
+      return qs.stringify(payload)
     }
 
     return payload
