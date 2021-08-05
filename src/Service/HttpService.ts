@@ -1,4 +1,3 @@
-import * as qs from 'qs'
 import { AxiosInstance, AxiosResponse, Method } from 'axios'
 import { Request, Response } from 'express'
 import { inject, injectable } from 'inversify'
@@ -18,19 +17,19 @@ export class HttpService implements HttpServiceInterface {
   ) {
   }
 
-  async callSyncingServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
+  async callSyncingServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<void> {
     await this.callServer(this.syncingServerJsUrl, request, response, endpoint, payload)
   }
 
-  async callLegacySyncingServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
+  async callLegacySyncingServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<void> {
     await this.callServerWithLegacyFormat(this.syncingServerJsUrl, request, response, endpoint, payload)
   }
 
-  async callAuthServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
+  async callAuthServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<void> {
     await this.callServer(this.authServerUrl, request, response, endpoint, payload)
   }
 
-  async callPaymentsServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
+  async callPaymentsServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<void> {
     if (!this.paymentsServerUrl === undefined) {
       this.logger.debug('Payments Server URL not defined. Skipped request to Payments API.')
 
@@ -39,11 +38,11 @@ export class HttpService implements HttpServiceInterface {
     await this.callServerWithLegacyFormat(this.paymentsServerUrl, request, response, endpoint, payload)
   }
 
-  async callAuthServerWithLegacyFormat(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
+  async callAuthServerWithLegacyFormat(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<void> {
     await this.callServerWithLegacyFormat(this.authServerUrl, request, response, endpoint, payload)
   }
 
-  private async getServerResponse(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<AxiosResponse | undefined> {
+  private async getServerResponse(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<AxiosResponse | undefined> {
     try {
       this.logger.debug(`Calling [${request.method}] ${serverUrl}/${endpoint},
         headers: ${JSON.stringify(request.headers)},
@@ -62,7 +61,7 @@ export class HttpService implements HttpServiceInterface {
         method: request.method as Method,
         headers,
         url: `${serverUrl}/${endpoint}`,
-        data: this.getRequestData(request, payload),
+        data: this.getRequestData(payload),
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
         params: request.query,
@@ -86,7 +85,7 @@ export class HttpService implements HttpServiceInterface {
     return
   }
 
-  private async callServer(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
+  private async callServer(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<void> {
     const serviceResponse = await this.getServerResponse(serverUrl, request, response, endpoint, payload)
 
     this.logger.debug('Response from underlying server: %O', serviceResponse?.data)
@@ -109,7 +108,7 @@ export class HttpService implements HttpServiceInterface {
     })
   }
 
-  private async callServerWithLegacyFormat(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown>): Promise<void> {
+  private async callServerWithLegacyFormat(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<void> {
     const serviceResponse = await this.getServerResponse(serverUrl, request, response, endpoint, payload)
 
     this.logger.debug('Response body from underlying legacy server: %O', serviceResponse?.data)
@@ -124,17 +123,14 @@ export class HttpService implements HttpServiceInterface {
     response.status(serviceResponse.status).send(serviceResponse.data)
   }
 
-  private getRequestData(request: Request, payload: Record<string, unknown> | undefined): Record<string, unknown> | string | undefined {
+  private getRequestData(payload: Record<string, unknown> | string | undefined): Record<string, unknown> | string | undefined {
     if (
+      payload === '' ||
       payload === null ||
       payload === undefined ||
       (typeof payload === 'object' && Object.keys(payload).length === 0)
     ) {
       return undefined
-    }
-
-    if (request.headers['content-type']?.includes('application/x-www-form-urlencoded')) {
-      return qs.stringify(payload)
     }
 
     return payload
