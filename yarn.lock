@@ -620,10 +620,18 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@standardnotes/auth@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@standardnotes/auth/-/auth-1.1.0.tgz#8342a056ea4e2ef6ecd3c6d1d7ef3f99668cb5bf"
-  integrity sha512-xRF26yaqtgtDA712Dy5Ga6i4txcMP7C/ziuzSMSc6OpgizlDacjbmB2PKnKmIeB6LuHzyJ3jXGK69EoDLoO/mg==
+"@standardnotes/auth@3.4.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@standardnotes/auth/-/auth-3.4.0.tgz#8a5f07aa82a53810eb3e5630bf5dba796c68b45a"
+  integrity sha512-vO5u96FdsHIxZTimgLSyPcfPFvyMYI4L1t4L+TpDv04D+exVPyRAyce/FayZrtlyyu4QNhhr9mQGMetotjsPSg==
+  dependencies:
+    "@standardnotes/common" "^1.0.0"
+    "@standardnotes/features" "^1.2.0"
+
+"@standardnotes/common@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@standardnotes/common/-/common-1.0.0.tgz#5647ed068c5f022f1d2cc5fa9766d77115ff23bf"
+  integrity sha512-4DFoBiaI3YgJY2AX/Yd8NeGC9J3IuqDl15xWNj/b54zrMx3M5OSvUts62PhQ7lByVgLMakY3v8gaYzZXA7ptLg==
 
 "@standardnotes/config@^1.0.1":
   version "1.0.1"
@@ -632,6 +640,13 @@
   dependencies:
     "@typescript-eslint/eslint-plugin" "^4.14.0"
     "@typescript-eslint/parser" "^4.14.0"
+
+"@standardnotes/features@^1.2.0":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@standardnotes/features/-/features-1.2.1.tgz#5ada49a2e83760d87bad9f333392ddb9d5c8a926"
+  integrity sha512-uZtcRGZ+HPyiKpZVOhVhOH745DUNQsv/YX1fsEbBsXfivi0WZZsvnOxIxejQAG3Ns5/GoKciwxCtrjkgOxBIpw==
+  dependencies:
+    "@standardnotes/common" "^1.0.0"
 
 "@types/axios@^0.14.0":
   version "0.14.0"

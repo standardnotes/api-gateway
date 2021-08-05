@@ -47,4 +47,9 @@ export class UsersController extends BaseHttpController {
   async deleteSetting(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, `users/${request.params.userUuid}/settings/${request.params.settingName}`, request.body)
   }
+
+  @httpGet('/:userUuid/features', TYPES.AuthMiddleware)
+  async getFeatures(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, `users/${request.params.userUuid}/features`)
+  }
 }
