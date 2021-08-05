@@ -19,9 +19,12 @@ export class AuthMiddleware extends BaseMiddleware {
   }
 
   async handler (request: Request, response: Response, next: NextFunction): Promise<void> {
-    if (!request.headers.authorization) {
-      this.logger.debug('AuthMiddleware invalid-auth: !request.headers.authorization')
+    let authHeaderValue = request.headers.authorization as string
+    if ('sn_api_authorization' in request.query) {
+      authHeaderValue = `Bearer ${request.query.sn_api_authorization}`
+    }
 
+    if (!authHeaderValue) {
       response.status(401).send({
         error: {
           tag: 'invalid-auth',
@@ -36,7 +39,7 @@ export class AuthMiddleware extends BaseMiddleware {
       const authResponse = await this.httpClient.request({
         method: 'POST',
         headers: {
-          'Authorization': request.headers.authorization,
+          'Authorization': authHeaderValue,
           'Accept': 'application/json',
         },
         validateStatus: (status: number) => {
