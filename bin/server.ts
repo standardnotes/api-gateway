@@ -14,7 +14,7 @@ import '../src/Controller/v1/WebSocketsController'
 
 import * as helmet from 'helmet'
 import * as cors from 'cors'
-import { urlencoded, json, Request, Response, NextFunction } from 'express'
+import { text, json, Request, Response, NextFunction } from 'express'
 import * as winston from 'winston'
 
 import { InversifyExpressServer } from 'inversify-express-utils'
@@ -54,7 +54,11 @@ void container.load().then(container => {
     }))
     /* eslint-enable */
     app.use(json({ limit: '50mb' }))
-    app.use(urlencoded({ extended: true, limit: '50mb', parameterLimit: 5000 }))
+    app.use(text({ type: [
+      'text/plain',
+      'application/x-www-form-urlencoded',
+      'application/x-www-form-urlencoded; charset=utf-8',
+    ] }))
     app.use(cors())
     app.use((_error: unknown, _request: Request, response: Response, _next: NextFunction) => {
       response.status(500).send({ error: 'Request failed.' })
