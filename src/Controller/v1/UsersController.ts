@@ -38,9 +38,19 @@ export class UsersController extends BaseHttpController {
     await this.httpService.callAuthServer(request, response, 'auth', request.body)
   }
 
+  @httpGet('/:userUuid/settings', TYPES.AuthMiddleware)
+  async listSettings(request:Request, response:Response):Promise<void> {
+    await this.httpService.callAuthServer(request, response, `users/${request.params.userUuid}/settings`)
+  }
+
   @httpPut('/:userUuid/settings', TYPES.AuthMiddleware)
   async putSetting(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, `users/${request.params.userUuid}/settings`, request.body)
+  }
+
+  @httpGet('/:userUuid/settings/:settingName', TYPES.AuthMiddleware)
+  async getSetting(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, `users/${request.params.userUuid}/settings/${request.params.settingName}`)
   }
 
   @httpDelete('/:userUuid/settings/:settingName', TYPES.AuthMiddleware)
