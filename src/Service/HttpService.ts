@@ -100,8 +100,8 @@ export class HttpService implements HttpServiceInterface {
     response.status(serviceResponse.status).send({
       meta: {
         auth: {
+          userUuid: response.locals.userUuid,
           roles: response.locals.roles,
-          features: response.locals.features,
         }
       },
       data: serviceResponse.data
