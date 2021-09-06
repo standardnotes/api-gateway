@@ -5,7 +5,7 @@ import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
 
 @controller('/v2/users')
-export class UsersController extends BaseHttpController {
+export class UsersControllerV2 extends BaseHttpController {
   constructor(
     @inject(TYPES.HTTPService) private httpService: HttpServiceInterface,
   ) {
