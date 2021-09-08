@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { inject } from 'inversify'
 import { all, BaseHttpController, controller, httpDelete, httpGet, httpPatch, httpPost, httpPut, results } from 'inversify-express-utils'
+import { Logger } from 'winston'
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
 
@@ -8,6 +9,7 @@ import { HttpServiceInterface } from '../../Service/HttpClientInterface'
 export class UsersController extends BaseHttpController {
   constructor(
     @inject(TYPES.HTTPService) private httpService: HttpServiceInterface,
+    @inject(TYPES.Logger) private logger: Logger,
   ) {
     super()
   }
@@ -17,10 +19,16 @@ export class UsersController extends BaseHttpController {
     await this.httpService.callAuthServer(request, response, `users/${request.params.userId}`, request.body)
   }
 
-  @httpPut('/:userId/password', TYPES.AuthMiddleware)
+  @httpPut('/:userUuid/password', TYPES.AuthMiddleware)
   async changePassword(request: Request, response: Response): Promise<void> {
-    request.method = 'POST'
-    await this.httpService.callAuthServer(request, response, 'auth/change_pw', request.body)
+    this.logger.debug('[DEPRECATED] use endpoint /v1/users/:userUuid/attributes/credentials instead of /v1/users/:userUuid/password')
+
+    await this.httpService.callAuthServer(request, response, `users/${request.params.userUuid}/attributes/credentials`, request.body)
+  }
+
+  @httpPut('/:userUuid/attributes/credentials', TYPES.AuthMiddleware)
+  async changeCredentials(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, `users/${request.params.userUuid}/attributes/credentials`, request.body)
   }
 
   @httpGet('/:userId/params', TYPES.AuthMiddleware)
