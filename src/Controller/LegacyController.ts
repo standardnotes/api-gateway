@@ -17,15 +17,15 @@ export class LegacyController extends BaseHttpController {
     super()
 
     this.AUTH_ROUTES = new Map([
-      ['POST:/auth', 'auth'],
-      ['POST:/auth/sign_out', 'auth/sign_out'],
-      ['POST:/auth/change_pw', 'auth/change_pw'],
-      ['GET:/sessions', 'sessions'],
-      ['DELETE:/session', 'session'],
-      ['DELETE:/session/all', 'session/all'],
-      ['POST:/session/refresh', 'session/refresh'],
-      ['POST:/auth/sign_in', 'auth/sign_in'],
-      ['GET:/auth/params', 'auth/params']
+      ['POST:/auth', 'POST:auth'],
+      ['POST:/auth/sign_out', 'POST:auth/sign_out'],
+      ['POST:/auth/change_pw', 'PUT:/users/legacy-endpoint-user/attributes/credentials'],
+      ['GET:/sessions', 'GET:sessions'],
+      ['DELETE:/session', 'DELETE:session'],
+      ['DELETE:/session/all', 'DELETE:session/all'],
+      ['POST:/session/refresh', 'POST:session/refresh'],
+      ['POST:/auth/sign_in', 'POST:auth/sign_in'],
+      ['GET:/auth/params', 'GET:auth/params']
     ])
 
     this.PARAMETRIZED_AUTH_ROUTES = new Map([
@@ -61,9 +61,12 @@ export class LegacyController extends BaseHttpController {
   @all('*')
   async legacyProxyToSyncingServer(request: Request, response: Response): Promise<void> {
     if (this.shouldBeRedirectedToAuthService(request)) {
-      this.logger.debug(`Proxying legacy request to auth for: ${request.method}:${request.path}`)
+      const methodAndPath = this.getMethodAndPath(request)
 
-      await this.httpService.callAuthServerWithLegacyFormat(request, response, this.getPath(request), request.body)
+      this.logger.debug(`Proxying legacy request to auth from: [${request.method}] ${request.path} to: [${methodAndPath.method}] ${methodAndPath.path}`)
+
+      request.method = methodAndPath.method
+      await this.httpService.callAuthServerWithLegacyFormat(request, response, methodAndPath.path, request.body)
 
       return
     }
@@ -73,18 +76,30 @@ export class LegacyController extends BaseHttpController {
     await this.httpService.callLegacySyncingServer(request, response, request.path.substring(1), request.body)
   }
 
-  private getPath(request: Request): string {
+  private getMethodAndPath(request: Request): { method: string, path: string } {
     const requestKey = `${request.method}:${request.path}`
 
     if (this.AUTH_ROUTES.has(requestKey)) {
-      return <string> this.AUTH_ROUTES.get(requestKey)
+      const legacyRoute = this.AUTH_ROUTES.get(requestKey) as string
+      const legacyRouteMethodAndPath = legacyRoute.split(':')
+
+      return {
+        method: legacyRouteMethodAndPath[0],
+        path: legacyRouteMethodAndPath[1],
+      }
     }
 
     for (const key of this.AUTH_ROUTES.keys()) {
       const regExp = new RegExp(key)
       const matches = regExp.exec(requestKey)
       if (matches !== null) {
-        return (<string> this.AUTH_ROUTES.get(key)).replace('{uuid}', matches[1])
+        const legacyRoute = (this.AUTH_ROUTES.get(key) as string).replace('{uuid}', matches[1])
+        const legacyRouteMethodAndPath = legacyRoute.split(':')
+
+        return {
+          method: legacyRouteMethodAndPath[0],
+          path: legacyRouteMethodAndPath[1],
+        }
       }
     }
 
