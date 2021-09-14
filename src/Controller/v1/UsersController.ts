@@ -75,4 +75,9 @@ export class UsersController extends BaseHttpController {
   async getSubscription(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, `users/${request.params.userUuid}/subscription`)
   }
+
+  @httpDelete('/:userUuid', TYPES.AuthMiddleware)
+  async deleteUser(_request: Request, _response: Response): Promise<void> {
+    throw Error('Not implemented')
+  }
 }
