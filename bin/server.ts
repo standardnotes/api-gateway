@@ -61,8 +61,19 @@ void container.load().then(container => {
       'application/x-www-form-urlencoded; charset=utf-8',
     ] }))
     app.use(cors())
-    app.use((_error: unknown, _request: Request, response: Response, _next: NextFunction) => {
-      response.status(500).send({ error: 'Request failed.' })
+  })
+
+  const logger: winston.Logger = container.get(TYPES.Logger)
+
+  server.setErrorConfig((app) => {
+    app.use((error: Record<string, unknown>, _request: Request, response: Response, _next: NextFunction) => {
+      logger.error(error.stack)
+
+      response.status(500).send({
+        error: {
+          message: 'Unfortunately, we couldn\'t handle your request. Please try again or contact our support if the error persists.',
+        },
+      })
     })
   })
 
@@ -72,8 +83,6 @@ void container.load().then(container => {
   env.load()
 
   serverInstance.listen(env.get('PORT'))
-
-  const logger: winston.Logger = container.get(TYPES.Logger)
 
   logger.info(`Server started on port ${process.env.PORT}`)
 })
