@@ -42,7 +42,11 @@ export class PaymentsController extends BaseHttpController {
     await this.httpService.callPaymentsServer(request, response, 'api/extensions', request.body)
   }
 
-  @all('/subscriptions(/*)?')
+  @httpPost('/subscriptions/tiered', TYPES.AuthMiddleware)
+  async createTieredSubscription(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'api/subscriptions/tiered', request.body)
+  }
+
   async subscriptions(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, request.path.replace('v1', 'api'), request.body)
   }
@@ -120,5 +124,10 @@ export class PaymentsController extends BaseHttpController {
   @all('/refunds')
   async refunds(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, 'api/refunds', request.body)
+  }
+  
+  @httpGet('/purchase', TYPES.AuthMiddleware)
+  async getPurchasePage(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'api/purchase')
   }
 }
