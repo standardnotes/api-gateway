@@ -121,7 +121,7 @@ export class HttpService implements HttpServiceInterface {
     this.applyResponseHeaders(serviceResponse, response)
 
     if (serviceResponse.request._redirectable._redirectCount > 0) {
-      response.status(301).redirect(serviceResponse.request.res.responseUrl)
+      response.status(302).redirect(serviceResponse.request.res.responseUrl)
     } else {
       response.status(serviceResponse.status).send(serviceResponse.data)
     }
