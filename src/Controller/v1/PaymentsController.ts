@@ -129,6 +129,6 @@ export class PaymentsController extends BaseHttpController {
   
   @httpGet('/purchase', TYPES.AuthMiddleware)
   async getPurchasePage(request: Request, response: Response): Promise<void> {
-    await this.httpService.callPaymentsServer(request, response, 'api/purchase')
+    await this.httpService.callPaymentsServer(request, response, `api/purchase?sn_api_authorization=${request.query.sn_api_authorization}`)
   }
 }
