@@ -47,6 +47,7 @@ export class PaymentsController extends BaseHttpController {
     await this.httpService.callPaymentsServer(request, response, 'api/subscriptions/tiered', request.body)
   }
 
+  @all('/subscriptions(/*)?')
   async subscriptions(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, request.path.replace('v1', 'api'), request.body)
   }
