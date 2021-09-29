@@ -120,7 +120,11 @@ export class HttpService implements HttpServiceInterface {
 
     this.applyResponseHeaders(serviceResponse, response)
 
-    response.status(serviceResponse.status).send(serviceResponse.data)
+    if (serviceResponse.request._redirectable._redirectCount > 0) {
+      response.status(302).redirect(serviceResponse.request.res.responseUrl)
+    } else {
+      response.status(serviceResponse.status).send(serviceResponse.data)
+    }
   }
 
   private getRequestData(payload: Record<string, unknown> | string | undefined): Record<string, unknown> | string | undefined {
