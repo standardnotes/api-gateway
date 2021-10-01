@@ -11,6 +11,7 @@ import '../src/Controller/v1/RevisionsController'
 import '../src/Controller/v1/ItemsController'
 import '../src/Controller/v1/PaymentsController'
 import '../src/Controller/v1/WebSocketsController'
+import '../src/Controller/v1/TokensController'
 import '../src/Controller/v2/PaymentsControllerV2'
 
 import * as helmet from 'helmet'
