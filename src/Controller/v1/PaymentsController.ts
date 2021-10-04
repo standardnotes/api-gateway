@@ -129,6 +129,10 @@ export class PaymentsController extends BaseHttpController {
 
   @httpGet('/purchase', TYPES.PurchaseTokenAuthMiddleware)
   async getPurchasePage(request: Request, response: Response): Promise<void> {
-    await this.httpService.callPaymentsServer(request, response, `api/purchase?purchase_token=${request.query.purchase_token}`)
+    await this.httpService.callPaymentsServer(
+      request,
+      response,
+      `api/purchase?purchase_token=${request.query.purchase_token}&success_url=${request.query.success_url}`
+    )
   }
 }
