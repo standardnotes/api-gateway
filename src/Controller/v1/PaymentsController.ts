@@ -42,7 +42,7 @@ export class PaymentsController extends BaseHttpController {
     await this.httpService.callPaymentsServer(request, response, 'api/extensions', request.body)
   }
 
-  @httpPost('/subscriptions/tiered', TYPES.EphemeralAuthMiddleware)
+  @httpPost('/subscriptions/tiered', TYPES.PurchaseTokenAuthMiddleware)
   async createTieredSubscription(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, 'api/subscriptions/tiered', request.body)
   }
@@ -127,8 +127,8 @@ export class PaymentsController extends BaseHttpController {
     await this.httpService.callPaymentsServer(request, response, 'api/refunds', request.body)
   }
 
-  @httpGet('/purchase', TYPES.EphemeralAuthMiddleware)
+  @httpGet('/purchase', TYPES.PurchaseTokenAuthMiddleware)
   async getPurchasePage(request: Request, response: Response): Promise<void> {
-    await this.httpService.callPaymentsServer(request, response, `api/purchase?ephemeral_token=${request.query.ephemeral_token}`)
+    await this.httpService.callPaymentsServer(request, response, `api/purchase?purchase_token=${request.query.purchase_token}`)
   }
 }
