@@ -8,7 +8,7 @@ import { Logger } from 'winston'
 import TYPES from '../Bootstrap/Types'
 
 @injectable()
-export class EphemeralAuthMiddleware extends BaseMiddleware {
+export class PurchaseTokenAuthMiddleware extends BaseMiddleware {
   constructor (
     @inject(TYPES.HTTPClient) private httpClient: AxiosInstance,
     @inject(TYPES.AUTH_SERVER_URL) private authServerUrl: string,
@@ -19,8 +19,8 @@ export class EphemeralAuthMiddleware extends BaseMiddleware {
   }
 
   async handler (request: Request, response: Response, next: NextFunction): Promise<void> {
-    const ephemeralToken = request.query.ephemeral_token
-    if (!ephemeralToken) {
+    const purchaseToken = request.query.purchase_token
+    if (!purchaseToken) {
       response.status(401).send({
         error: {
           tag: 'invalid-auth',
@@ -40,7 +40,7 @@ export class EphemeralAuthMiddleware extends BaseMiddleware {
         validateStatus: (status: number) => {
           return status >= 200 && status < 500
         },
-        url: `${this.authServerUrl}/tokens/${ephemeralToken}/validate`,
+        url: `${this.authServerUrl}/purchase-tokens/${purchaseToken}/validate`,
       })
 
       this.logger.debug('Auth validation status %s response: %O', authResponse.status, authResponse.data)
@@ -59,7 +59,7 @@ export class EphemeralAuthMiddleware extends BaseMiddleware {
       response.locals.userUuid = decodedToken.user.uuid
       response.locals.roles = decodedToken.roles
     } catch (error) {
-      this.logger.error(`Could not pass the request to ${this.authServerUrl}/tokens/${ephemeralToken}/validate on underlying service: ${error.response ? JSON.stringify(error.response.body) : error.message}`)
+      this.logger.error(`Could not pass the request to ${this.authServerUrl}/purchase-tokens/${purchaseToken}/validate on underlying service: ${error.response ? JSON.stringify(error.response.body) : error.message}`)
 
       this.logger.debug('Response error: %O', error.response ?? error)
 
