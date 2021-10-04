@@ -129,6 +129,6 @@ export class PaymentsController extends BaseHttpController {
 
   @httpGet('/purchase', TYPES.EphemeralAuthMiddleware)
   async getPurchasePage(request: Request, response: Response): Promise<void> {
-    await this.httpService.callPaymentsServer(request, response, 'api/purchase')
+    await this.httpService.callPaymentsServer(request, response, `api/purchase?ephemeral_token=${request.query.ephemeral_token}`)
   }
 }
