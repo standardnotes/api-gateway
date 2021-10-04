@@ -5,7 +5,7 @@ import { BaseHttpController, controller, httpPost } from 'inversify-express-util
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
 
-@controller('/v1/tokens')
+@controller('/v1/purchase-tokens')
 export class TokensController extends BaseHttpController {
   constructor(
     @inject(TYPES.HTTPService) private httpService: HttpServiceInterface,
@@ -15,6 +15,6 @@ export class TokensController extends BaseHttpController {
 
   @httpPost('/', TYPES.AuthMiddleware)
   async createToken(request: Request, response: Response): Promise<void> {
-    await this.httpService.callAuthServer(request, response, 'tokens', request.body)
+    await this.httpService.callAuthServer(request, response, 'purchase-tokens', request.body)
   }
 }
