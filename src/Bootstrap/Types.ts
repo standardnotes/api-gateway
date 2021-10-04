@@ -9,6 +9,7 @@ const TYPES = {
   VERSION: Symbol.for('VERSION'),
   // Middleware
   AuthMiddleware: Symbol.for('AuthMiddleware'),
+  EphemeralAuthMiddleware: Symbol.for('EphemeralAuthMiddleware'),
   // Services
   HTTPService: Symbol.for('HTTPService')
 }

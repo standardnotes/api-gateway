@@ -7,6 +7,7 @@ import TYPES from './Types'
 import { AuthMiddleware } from '../Controller/AuthMiddleware'
 import { HttpServiceInterface } from '../Service/HttpClientInterface'
 import { HttpService } from '../Service/HttpService'
+import { EphemeralAuthMiddleware } from '../Controller/EphemeralAuthMiddleware'
 
 export class ContainerConfigLoader {
   async load(): Promise<Container> {
@@ -38,6 +39,7 @@ export class ContainerConfigLoader {
 
     // Middleware
     container.bind<AuthMiddleware>(TYPES.AuthMiddleware).to(AuthMiddleware)
+    container.bind<EphemeralAuthMiddleware>(TYPES.EphemeralAuthMiddleware).to(EphemeralAuthMiddleware)
 
     // Services
     container.bind<HttpServiceInterface>(TYPES.HTTPService).to(HttpService)
