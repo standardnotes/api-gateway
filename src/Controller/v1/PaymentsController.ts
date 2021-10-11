@@ -135,4 +135,9 @@ export class PaymentsController extends BaseHttpController {
       `api/purchase?purchase_token=${request.query.purchase_token}&success_url=${request.query.success_url}`
     )
   }
+
+  @httpPost('/stripe_setup_intent', TYPES.PurchaseTokenAuthMiddleware)
+  async createStripeSetupIntent(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'api/stripe_setup_intent', request.body)
+  }
 }
