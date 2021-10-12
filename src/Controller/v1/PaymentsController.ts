@@ -117,6 +117,12 @@ export class PaymentsController extends BaseHttpController {
     await this.httpService.callPaymentsServer(request, response, `api/email_subscriptions/${request.params.token}/unsubscribe`, request.body)
   }
 
+
+  @httpPost('/pro_users/stripe-setup-intent', TYPES.PurchaseTokenAuthMiddleware)
+  async createStripeSetupIntent(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'pro_users/stripe-setup-intent', request.body)
+  }
+
   @all('/pro_users(/*)?')
   async proUsers(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, request.path.replace('v1', 'api'), request.body)
@@ -134,10 +140,5 @@ export class PaymentsController extends BaseHttpController {
       response,
       `api/purchase?purchase_token=${request.query.purchase_token}&success_url=${request.query.success_url}`
     )
-  }
-
-  @httpPost('/stripe_setup_intent', TYPES.PurchaseTokenAuthMiddleware)
-  async createStripeSetupIntent(request: Request, response: Response): Promise<void> {
-    await this.httpService.callPaymentsServer(request, response, 'api/stripe_setup_intent', request.body)
   }
 }
