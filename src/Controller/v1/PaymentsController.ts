@@ -123,6 +123,11 @@ export class PaymentsController extends BaseHttpController {
     await this.httpService.callPaymentsServer(request, response, 'pro_users/stripe-setup-intent', request.body)
   }
 
+  @httpPost('/pro_users/stripe-setup-intent/offline')
+  async createOfflineStripeSetupIntent(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'pro_users/stripe-setup-intent/offline', request.body)
+  }
+
   @all('/pro_users(/*)?')
   async proUsers(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, request.path.replace('v1', 'api'), request.body)
