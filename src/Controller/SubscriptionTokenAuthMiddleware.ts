@@ -8,7 +8,7 @@ import { Logger } from 'winston'
 import TYPES from '../Bootstrap/Types'
 
 @injectable()
-export class PurchaseTokenAuthMiddleware extends BaseMiddleware {
+export class SubscriptionTokenAuthMiddleware extends BaseMiddleware {
   constructor (
     @inject(TYPES.HTTPClient) private httpClient: AxiosInstance,
     @inject(TYPES.AUTH_SERVER_URL) private authServerUrl: string,
@@ -19,8 +19,8 @@ export class PurchaseTokenAuthMiddleware extends BaseMiddleware {
   }
 
   async handler (request: Request, response: Response, next: NextFunction): Promise<void> {
-    const purchaseToken = request.query.purchase_token
-    if (!purchaseToken) {
+    const subscriptionToken = request.query.subscription_token
+    if (!subscriptionToken) {
       response.status(401).send({
         error: {
           tag: 'invalid-auth',
@@ -40,7 +40,7 @@ export class PurchaseTokenAuthMiddleware extends BaseMiddleware {
         validateStatus: (status: number) => {
           return status >= 200 && status < 500
         },
-        url: `${this.authServerUrl}/purchase-tokens/${purchaseToken}/validate`,
+        url: `${this.authServerUrl}/purchase-tokens/${subscriptionToken}/validate`,
       })
 
       this.logger.debug('Auth validation status %s response: %O', authResponse.status, authResponse.data)
@@ -59,7 +59,7 @@ export class PurchaseTokenAuthMiddleware extends BaseMiddleware {
       response.locals.userUuid = decodedToken.user.uuid
       response.locals.roles = decodedToken.roles
     } catch (error) {
-      this.logger.error(`Could not pass the request to ${this.authServerUrl}/purchase-tokens/${purchaseToken}/validate on underlying service: ${error.response ? JSON.stringify(error.response.body) : error.message}`)
+      this.logger.error(`Could not pass the request to ${this.authServerUrl}/purchase-tokens/${subscriptionToken}/validate on underlying service: ${error.response ? JSON.stringify(error.response.body) : error.message}`)
 
       this.logger.debug('Response error: %O', error.response ?? error)
 
