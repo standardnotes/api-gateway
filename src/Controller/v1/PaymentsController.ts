@@ -120,12 +120,12 @@ export class PaymentsController extends BaseHttpController {
 
   @httpPost('/pro_users/stripe-setup-intent', TYPES.SubscriptionTokenAuthMiddleware)
   async createStripeSetupIntent(request: Request, response: Response): Promise<void> {
-    await this.httpService.callPaymentsServer(request, response, 'pro_users/stripe-setup-intent', request.body)
+    await this.httpService.callPaymentsServer(request, response, 'api/pro_users/stripe-setup-intent', request.body)
   }
 
   @httpPost('/pro_users/stripe-setup-intent/offline')
   async createOfflineStripeSetupIntent(request: Request, response: Response): Promise<void> {
-    await this.httpService.callPaymentsServer(request, response, 'pro_users/stripe-setup-intent/offline', request.body)
+    await this.httpService.callPaymentsServer(request, response, 'api/pro_users/stripe-setup-intent/offline', request.body)
   }
 
   @all('/pro_users(/*)?')
