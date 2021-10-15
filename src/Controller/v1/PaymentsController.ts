@@ -42,6 +42,11 @@ export class PaymentsController extends BaseHttpController {
     await this.httpService.callPaymentsServer(request, response, 'api/extensions', request.body)
   }
 
+  @httpPost('/subscriptions/tiered', TYPES.SubscriptionTokenAuthMiddleware)
+  async createTieredSubscription(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'api/subscriptions/tiered', request.body)
+  }
+
   @all('/subscriptions(/*)?')
   async subscriptions(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, request.path.replace('v1', 'api'), request.body)
@@ -112,6 +117,17 @@ export class PaymentsController extends BaseHttpController {
     await this.httpService.callPaymentsServer(request, response, `api/email_subscriptions/${request.params.token}/unsubscribe`, request.body)
   }
 
+
+  @httpPost('/pro_users/stripe-setup-intent', TYPES.SubscriptionTokenAuthMiddleware)
+  async createStripeSetupIntent(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'pro_users/stripe-setup-intent', request.body)
+  }
+
+  @httpPost('/pro_users/stripe-setup-intent/offline')
+  async createOfflineStripeSetupIntent(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'pro_users/stripe-setup-intent/offline', request.body)
+  }
+
   @all('/pro_users(/*)?')
   async proUsers(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, request.path.replace('v1', 'api'), request.body)
@@ -120,5 +136,14 @@ export class PaymentsController extends BaseHttpController {
   @all('/refunds')
   async refunds(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, 'api/refunds', request.body)
+  }
+
+  @httpGet('/purchase', TYPES.SubscriptionTokenAuthMiddleware)
+  async getPurchasePage(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(
+      request,
+      response,
+      `api/purchase?subscription_token=${request.query.subscription_token}&success_url=${request.query.success_url}`
+    )
   }
 }

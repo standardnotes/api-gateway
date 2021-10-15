@@ -44,11 +44,6 @@ export class HttpService implements HttpServiceInterface {
 
   private async getServerResponse(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<AxiosResponse | undefined> {
     try {
-      this.logger.debug(`Calling [${request.method}] ${serverUrl}/${endpoint},
-        headers: ${JSON.stringify(request.headers)},
-        query: ${JSON.stringify(request.query)},
-        payload: ${JSON.stringify(payload)}`)
-
       const headers = request.headers
       delete headers.host
       delete headers['content-length']
@@ -56,6 +51,11 @@ export class HttpService implements HttpServiceInterface {
       if (response.locals.authToken) {
         headers['X-Auth-Token'] = response.locals.authToken
       }
+
+      this.logger.debug(`Calling [${request.method}] ${serverUrl}/${endpoint},
+        headers: ${JSON.stringify(headers)},
+        query: ${JSON.stringify(request.query)},
+        payload: ${JSON.stringify(payload)}`)
 
       const serviceResponse = await this.httpClient.request({
         method: request.method as Method,
@@ -120,7 +120,11 @@ export class HttpService implements HttpServiceInterface {
 
     this.applyResponseHeaders(serviceResponse, response)
 
-    response.status(serviceResponse.status).send(serviceResponse.data)
+    if (serviceResponse.request._redirectable._redirectCount > 0) {
+      response.status(302).redirect(serviceResponse.request.res.responseUrl)
+    } else {
+      response.status(serviceResponse.status).send(serviceResponse.data)
+    }
   }
 
   private getRequestData(payload: Record<string, unknown> | string | undefined): Record<string, unknown> | string | undefined {
