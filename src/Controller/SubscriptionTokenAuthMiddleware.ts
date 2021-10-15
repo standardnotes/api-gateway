@@ -40,7 +40,7 @@ export class SubscriptionTokenAuthMiddleware extends BaseMiddleware {
         validateStatus: (status: number) => {
           return status >= 200 && status < 500
         },
-        url: `${this.authServerUrl}/purchase-tokens/${subscriptionToken}/validate`,
+        url: `${this.authServerUrl}/subscription-tokens/${subscriptionToken}/validate`,
       })
 
       this.logger.debug('Auth validation status %s response: %O', authResponse.status, authResponse.data)
@@ -59,7 +59,7 @@ export class SubscriptionTokenAuthMiddleware extends BaseMiddleware {
       response.locals.userUuid = decodedToken.user.uuid
       response.locals.roles = decodedToken.roles
     } catch (error) {
-      this.logger.error(`Could not pass the request to ${this.authServerUrl}/purchase-tokens/${subscriptionToken}/validate on underlying service: ${error.response ? JSON.stringify(error.response.body) : error.message}`)
+      this.logger.error(`Could not pass the request to ${this.authServerUrl}/subscription-tokens/${subscriptionToken}/validate on underlying service: ${error.response ? JSON.stringify(error.response.body) : error.message}`)
 
       this.logger.debug('Response error: %O', error.response ?? error)
 
