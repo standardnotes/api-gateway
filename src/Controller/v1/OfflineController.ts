@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { inject } from 'inversify'
-import { BaseHttpController, controller, httpGet } from 'inversify-express-utils'
+import { BaseHttpController, controller, httpGet, httpPost } from 'inversify-express-utils'
 
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
@@ -16,5 +16,10 @@ export class OfflineController extends BaseHttpController {
   @httpGet('/features')
   async getOfflineFeatures(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, 'offline/features', request.body)
+  }
+
+  @httpPost('/subscription-tokens')
+  async createOfflineSubscriptionToken(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, 'offline/subscription-tokens', request.body)
   }
 }
