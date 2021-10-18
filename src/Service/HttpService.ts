@@ -13,6 +13,7 @@ export class HttpService implements HttpServiceInterface {
     @inject(TYPES.AUTH_SERVER_URL) private authServerUrl: string,
     @inject(TYPES.SYNCING_SERVER_JS_URL) private syncingServerJsUrl: string,
     @inject(TYPES.PAYMENTS_SERVER_URL) private paymentsServerUrl: string,
+    @inject(TYPES.HTTP_CALL_TIMEOUT) private httpCallTimeout: number,
     @inject(TYPES.Logger) private logger: Logger
   ) {
   }
@@ -65,6 +66,7 @@ export class HttpService implements HttpServiceInterface {
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
         params: request.query,
+        timeout: this.httpCallTimeout,
         validateStatus: (status: number) => {
           return status >= 200 && status < 500
         },
