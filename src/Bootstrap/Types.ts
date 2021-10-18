@@ -6,6 +6,7 @@ const TYPES = {
   AUTH_SERVER_URL: Symbol.for('AUTH_SERVER_URL'),
   PAYMENTS_SERVER_URL: Symbol.for('PAYMENTS_SERVER_URL'),
   AUTH_JWT_SECRET: Symbol.for('AUTH_JWT_SECRET'),
+  HTTP_CALL_TIMEOUT: Symbol.for('HTTP_CALL_TIMEOUT'),
   VERSION: Symbol.for('VERSION'),
   // Middleware
   AuthMiddleware: Symbol.for('AuthMiddleware'),
