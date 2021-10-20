@@ -22,4 +22,9 @@ export class OfflineController extends BaseHttpController {
   async createOfflineSubscriptionToken(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, 'offline/subscription-tokens', request.body)
   }
+
+  @httpPost('/subscription-tokens/:token/validate')
+  async validateOfflineSubscriptionToken(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, `offline//subscription-tokens/${request.params.token}/validate`, request.body)
+  }
 }
