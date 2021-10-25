@@ -137,13 +137,4 @@ export class PaymentsController extends BaseHttpController {
   async refunds(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, 'api/refunds', request.body)
   }
-
-  @httpGet('/purchase', TYPES.SubscriptionTokenAuthMiddleware)
-  async getPurchasePage(request: Request, response: Response): Promise<void> {
-    await this.httpService.callPaymentsServer(
-      request,
-      response,
-      `api/purchase?subscription_token=${request.query.subscription_token}&success_url=${request.query.success_url}`
-    )
-  }
 }
