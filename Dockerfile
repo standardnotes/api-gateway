@@ -7,7 +7,7 @@ RUN addgroup -S apigateway -g $GID && adduser -D -S apigateway -G apigateway -u 
 
 RUN apk add --update --no-cache \
     alpine-sdk \
-    python
+    python3
 
 WORKDIR /var/www
 
