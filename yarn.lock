@@ -620,33 +620,25 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@standardnotes/auth@3.4.0":
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/@standardnotes/auth/-/auth-3.4.0.tgz#8a5f07aa82a53810eb3e5630bf5dba796c68b45a"
-  integrity sha512-vO5u96FdsHIxZTimgLSyPcfPFvyMYI4L1t4L+TpDv04D+exVPyRAyce/FayZrtlyyu4QNhhr9mQGMetotjsPSg==
+"@standardnotes/auth@3.8.1":
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/@standardnotes/auth/-/auth-3.8.1.tgz#4197fb2f7e223c6bd13a870a3feac3c73294fb3c"
+  integrity sha512-Q2/81dgFGIGuYlQ4VnSjGRsDB0Qw0tQP/qsiuV+DQj+wdp5Wy5WX3Q4g+p2PNvoyEAYgbuduEHZfWuTLAaIdyw==
   dependencies:
-    "@standardnotes/common" "^1.0.0"
-    "@standardnotes/features" "^1.2.0"
+    "@standardnotes/common" "^1.2.1"
 
-"@standardnotes/common@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@standardnotes/common/-/common-1.0.0.tgz#5647ed068c5f022f1d2cc5fa9766d77115ff23bf"
-  integrity sha512-4DFoBiaI3YgJY2AX/Yd8NeGC9J3IuqDl15xWNj/b54zrMx3M5OSvUts62PhQ7lByVgLMakY3v8gaYzZXA7ptLg==
+"@standardnotes/common@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@standardnotes/common/-/common-1.2.1.tgz#9db212db86ccbf08b347da02549b3dbe4bedbb02"
+  integrity sha512-HilBxS50CBlC6TJvy1mrnhGVDzOH63M/Jf+hyMxQ0Vt1nYzpd0iyxVEUrgMh7ZiyO1b9CLnCDED99Jy9rnZWVQ==
 
-"@standardnotes/config@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@standardnotes/config/-/config-1.0.1.tgz#4178de5f1d148d796c69cf38cbb5ceffa656806f"
-  integrity sha512-JJ4AiZE+5oDr6SOM+qw/mGE+agfFZEOo+zwkUj5f5j2pYKFmPEGhDoej2dmZji38GdfG/ftLTgweAyI/L+sjVg==
+"@standardnotes/config@2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@standardnotes/config/-/config-2.0.1.tgz#13bfdae7a514c7479373502fa25e54bbfadad31b"
+  integrity sha512-WOItCUBUxzb4JH+/C3bCHi5t2ZZ8mvYGmokFgXko/SOnuYvjOlUYonWvn7qzDtz2SF+eI4rvDG7Lyuxt9aXA1A==
   dependencies:
     "@typescript-eslint/eslint-plugin" "^4.14.0"
     "@typescript-eslint/parser" "^4.14.0"
-
-"@standardnotes/features@^1.2.0":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@standardnotes/features/-/features-1.2.1.tgz#5ada49a2e83760d87bad9f333392ddb9d5c8a926"
-  integrity sha512-uZtcRGZ+HPyiKpZVOhVhOH745DUNQsv/YX1fsEbBsXfivi0WZZsvnOxIxejQAG3Ns5/GoKciwxCtrjkgOxBIpw==
-  dependencies:
-    "@standardnotes/common" "^1.0.0"
 
 "@types/axios@^0.14.0":
   version "0.14.0"
