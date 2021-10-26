@@ -104,9 +104,9 @@ export class HttpService implements HttpServiceInterface {
         auth: {
           userUuid: response.locals.userUuid,
           roles: response.locals.roles,
-        }
+        },
       },
-      data: serviceResponse.data
+      data: serviceResponse.data,
     })
   }
 

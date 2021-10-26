@@ -20,7 +20,7 @@ export class SessionsController extends BaseHttpController {
   @httpDelete('/:uuid', TYPES.AuthMiddleware)
   async deleteSession(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, 'session', {
-      uuid: request.params.uuid
+      uuid: request.params.uuid,
     })
   }
 
