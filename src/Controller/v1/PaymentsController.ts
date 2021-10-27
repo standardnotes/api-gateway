@@ -117,7 +117,6 @@ export class PaymentsController extends BaseHttpController {
     await this.httpService.callPaymentsServer(request, response, `api/email_subscriptions/${request.params.token}/unsubscribe`, request.body)
   }
 
-
   @httpPost('/pro_users/stripe-setup-intent', TYPES.SubscriptionTokenAuthMiddleware)
   async createStripeSetupIntent(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, 'api/pro_users/stripe-setup-intent', request.body)
