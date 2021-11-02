@@ -23,8 +23,13 @@ export class OfflineController extends BaseHttpController {
     await this.httpService.callAuthServer(request, response, 'offline/subscription-tokens', request.body)
   }
 
-  @httpPost('/subscription-tokens/:token/validate')
-  async validateOfflineSubscriptionToken(request: Request, response: Response): Promise<void> {
-    await this.httpService.callAuthServer(request, response, `offline/subscription-tokens/${request.params.token}/validate`, request.body)
+  @httpPost('/invoices/send-latest', TYPES.OfflineSubscriptionTokenAuthMiddleware)
+  async sendLatestInvoice(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'api/pro_users/send-invoice', request.body)
+  }
+
+  @httpGet('/subscriptions/:subscriptionId', TYPES.OfflineSubscriptionTokenAuthMiddleware)
+  async getSubscription(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, `api/subscriptions/${request.params.subscriptionId}`, request.body)
   }
 }

@@ -8,6 +8,7 @@ import { AuthMiddleware } from '../Controller/AuthMiddleware'
 import { HttpServiceInterface } from '../Service/HttpClientInterface'
 import { HttpService } from '../Service/HttpService'
 import { SubscriptionTokenAuthMiddleware } from '../Controller/SubscriptionTokenAuthMiddleware'
+import { OfflineSubscriptionTokenAuthMiddleware } from '../Controller/OfflineSubscriptionTokenAuthMiddleware'
 
 export class ContainerConfigLoader {
   async load(): Promise<Container> {
@@ -41,6 +42,7 @@ export class ContainerConfigLoader {
     // Middleware
     container.bind<AuthMiddleware>(TYPES.AuthMiddleware).to(AuthMiddleware)
     container.bind<SubscriptionTokenAuthMiddleware>(TYPES.SubscriptionTokenAuthMiddleware).to(SubscriptionTokenAuthMiddleware)
+    container.bind<OfflineSubscriptionTokenAuthMiddleware>(TYPES.OfflineSubscriptionTokenAuthMiddleware).to(OfflineSubscriptionTokenAuthMiddleware)
 
     // Services
     container.bind<HttpServiceInterface>(TYPES.HTTPService).to(HttpService)

@@ -11,6 +11,7 @@ const TYPES = {
   // Middleware
   AuthMiddleware: Symbol.for('AuthMiddleware'),
   SubscriptionTokenAuthMiddleware: Symbol.for('SubscriptionTokenAuthMiddleware'),
+  OfflineSubscriptionTokenAuthMiddleware: Symbol.for('OfflineSubscriptionTokenAuthMiddleware'),
   // Services
   HTTPService: Symbol.for('HTTPService'),
 }
