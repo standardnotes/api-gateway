@@ -21,7 +21,7 @@ export class SubscriptionTokenAuthMiddleware extends BaseMiddleware {
   async handler (request: Request, response: Response, next: NextFunction): Promise<void> {
     const subscriptionToken = request.query.subscription_token
     const email = request.headers['x-offline-email']
-    if (!subscriptionToken || (!subscriptionToken && !email)) {
+    if (!subscriptionToken) {
       response.status(401).send({
         error: {
           tag: 'invalid-auth',
@@ -41,6 +41,9 @@ export class SubscriptionTokenAuthMiddleware extends BaseMiddleware {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
+        },
+        data: {
+          email,
         },
         validateStatus: (status: number) => {
           return status >= 200 && status < 500
