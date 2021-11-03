@@ -6,6 +6,7 @@ import { verify } from 'jsonwebtoken'
 import { AxiosInstance, AxiosResponse } from 'axios'
 import { Logger } from 'winston'
 import TYPES from '../Bootstrap/Types'
+import { TokenAuthenticationMethod } from './TokenAuthenticationMethod'
 
 @injectable()
 export class SubscriptionTokenAuthMiddleware extends BaseMiddleware {
@@ -32,8 +33,10 @@ export class SubscriptionTokenAuthMiddleware extends BaseMiddleware {
       return
     }
 
+    response.locals.tokenAuthenticationMethod = email ? TokenAuthenticationMethod.OfflineSubscriptionToken : TokenAuthenticationMethod.SubscriptionToken
+
     try {
-      const url = email ?
+      const url = response.locals.tokenAuthenticationMethod == TokenAuthenticationMethod.OfflineSubscriptionToken ?
         `${this.authServerUrl}/offline/subscription-tokens/${subscriptionToken}/validate` :
         `${this.authServerUrl}/subscription-tokens/${subscriptionToken}/validate`
 
@@ -60,7 +63,7 @@ export class SubscriptionTokenAuthMiddleware extends BaseMiddleware {
         return
       }
 
-      if (email) {
+      if (response.locals.tokenAuthenticationMethod == TokenAuthenticationMethod.OfflineSubscriptionToken) {
         this.handleOfflineAuthTokenValidationResponse(response, authResponse)
 
         return

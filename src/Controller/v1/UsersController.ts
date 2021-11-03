@@ -4,6 +4,7 @@ import { all, BaseHttpController, controller, httpDelete, httpGet, httpPatch, ht
 import { Logger } from 'winston'
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
+import { TokenAuthenticationMethod } from '../TokenAuthenticationMethod'
 
 @controller('/v1/users')
 export class UsersController extends BaseHttpController {
@@ -78,6 +79,12 @@ export class UsersController extends BaseHttpController {
 
   @httpGet('/subscription', TYPES.SubscriptionTokenAuthMiddleware)
   async getSubscriptionBySubscriptionToken(request: Request, response: Response): Promise<void> {
+    if (response.locals.tokenAuthenticationMethod === TokenAuthenticationMethod.OfflineSubscriptionToken) {
+      await this.httpService.callAuthServer(request, response, 'offline/users/subscription')
+
+      return
+    }
+
     await this.httpService.callAuthServer(request, response, `users/${response.locals.userUuid}/subscription`)
   }
 
