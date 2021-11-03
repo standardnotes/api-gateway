@@ -1,9 +1,9 @@
-import { Token } from '@standardnotes/auth'
+import { OfflineUserTokenData, Token } from '@standardnotes/auth'
 import { NextFunction, Request, Response } from 'express'
 import { inject, injectable } from 'inversify'
 import { BaseMiddleware } from 'inversify-express-utils'
 import { verify } from 'jsonwebtoken'
-import { AxiosInstance } from 'axios'
+import { AxiosInstance, AxiosResponse } from 'axios'
 import { Logger } from 'winston'
 import TYPES from '../Bootstrap/Types'
 
@@ -20,7 +20,8 @@ export class SubscriptionTokenAuthMiddleware extends BaseMiddleware {
 
   async handler (request: Request, response: Response, next: NextFunction): Promise<void> {
     const subscriptionToken = request.query.subscription_token
-    if (!subscriptionToken) {
+    const email = request.headers['x-offline-email']
+    if (!subscriptionToken || (!subscriptionToken && !email)) {
       response.status(401).send({
         error: {
           tag: 'invalid-auth',
@@ -32,6 +33,10 @@ export class SubscriptionTokenAuthMiddleware extends BaseMiddleware {
     }
 
     try {
+      const url = email ?
+        `${this.authServerUrl}/offline/subscription-tokens/${subscriptionToken}/validate` :
+        `${this.authServerUrl}/subscription-tokens/${subscriptionToken}/validate`
+
       const authResponse = await this.httpClient.request({
         method: 'POST',
         headers: {
@@ -40,7 +45,7 @@ export class SubscriptionTokenAuthMiddleware extends BaseMiddleware {
         validateStatus: (status: number) => {
           return status >= 200 && status < 500
         },
-        url: `${this.authServerUrl}/subscription-tokens/${subscriptionToken}/validate`,
+        url,
       })
 
       this.logger.debug('Auth validation status %s response: %O', authResponse.status, authResponse.data)
@@ -52,12 +57,13 @@ export class SubscriptionTokenAuthMiddleware extends BaseMiddleware {
         return
       }
 
-      response.locals.authToken = authResponse.data.authToken
+      if (email) {
+        this.handleOfflineAuthTokenValidationResponse(response, authResponse)
 
-      const decodedToken = <Token> verify(authResponse.data.authToken, this.jwtSecret, { algorithms: [ 'HS256' ] })
+        return
+      }
 
-      response.locals.userUuid = decodedToken.user.uuid
-      response.locals.roles = decodedToken.roles
+      this.handleAuthTokenValidationResponse(response, authResponse)
     } catch (error) {
       this.logger.error(`Could not pass the request to ${this.authServerUrl}/subscription-tokens/${subscriptionToken}/validate on underlying service: ${error.response ? JSON.stringify(error.response.body) : error.message}`)
 
@@ -72,5 +78,23 @@ export class SubscriptionTokenAuthMiddleware extends BaseMiddleware {
     }
 
     return next()
+  }
+
+  private handleOfflineAuthTokenValidationResponse(response: Response, authResponse: AxiosResponse) {
+    response.locals.offlineAuthToken = authResponse.data.authToken
+
+    const decodedToken = <OfflineUserTokenData> verify(authResponse.data.authToken, this.jwtSecret, { algorithms: [ 'HS256' ] })
+
+    response.locals.offlineUserEmail = decodedToken.userEmail
+    response.locals.offlineFeaturesToken = decodedToken.featuresToken
+  }
+
+  private handleAuthTokenValidationResponse(response: Response, authResponse: AxiosResponse) {
+    response.locals.authToken = authResponse.data.authToken
+
+    const decodedToken = <Token> verify(authResponse.data.authToken, this.jwtSecret, { algorithms: [ 'HS256' ] })
+
+    response.locals.userUuid = decodedToken.user.uuid
+    response.locals.roles = decodedToken.roles
   }
 }
