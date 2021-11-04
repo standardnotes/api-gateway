@@ -25,11 +25,11 @@ export class LegacyController extends BaseHttpController {
       ['DELETE:/session/all', 'DELETE:session/all'],
       ['POST:/session/refresh', 'POST:session/refresh'],
       ['POST:/auth/sign_in', 'POST:auth/sign_in'],
-      ['GET:/auth/params', 'GET:auth/params']
+      ['GET:/auth/params', 'GET:auth/params'],
     ])
 
     this.PARAMETRIZED_AUTH_ROUTES = new Map([
-      ['PATCH:/users/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})', 'users/{uuid}']
+      ['PATCH:/users/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})', 'users/{uuid}'],
     ])
   }
 
