@@ -12,7 +12,7 @@ const TYPES = {
   AuthMiddleware: Symbol.for('AuthMiddleware'),
   SubscriptionTokenAuthMiddleware: Symbol.for('SubscriptionTokenAuthMiddleware'),
   // Services
-  HTTPService: Symbol.for('HTTPService')
+  HTTPService: Symbol.for('HTTPService'),
 }
 
 export default TYPES

@@ -25,8 +25,8 @@ export class AuthMiddleware extends BaseMiddleware {
       response.status(401).send({
         error: {
           tag: 'invalid-auth',
-          message: 'Invalid login credentials.'
-        }
+          message: 'Invalid login credentials.',
+        },
       })
 
       return
