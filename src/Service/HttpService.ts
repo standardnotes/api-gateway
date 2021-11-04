@@ -45,7 +45,11 @@ export class HttpService implements HttpServiceInterface {
 
   private async getServerResponse(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<AxiosResponse | undefined> {
     try {
-      const headers = request.headers
+      const headers: Record<string, string> = {}
+      for (const headerName of Object.keys(request.headers)) {
+        headers[headerName] = request.headers[headerName] as string
+      }
+
       delete headers.host
       delete headers['content-length']
 
