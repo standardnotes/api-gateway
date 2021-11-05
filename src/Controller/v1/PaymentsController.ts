@@ -3,6 +3,7 @@ import { inject } from 'inversify'
 import { all, BaseHttpController, controller, httpDelete, httpGet, httpPost } from 'inversify-express-utils'
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
+import { TokenAuthenticationMethod } from '../TokenAuthenticationMethod'
 
 @controller('/v1')
 export class PaymentsController extends BaseHttpController {
@@ -119,12 +120,13 @@ export class PaymentsController extends BaseHttpController {
 
   @httpPost('/payments/stripe-setup-intent', TYPES.SubscriptionTokenAuthMiddleware)
   async createStripeSetupIntent(request: Request, response: Response): Promise<void> {
-    await this.httpService.callPaymentsServer(request, response, 'api/pro_users/stripe-setup-intent', request.body)
-  }
+    if (response.locals.tokenAuthenticationMethod === TokenAuthenticationMethod.OfflineSubscriptionToken) {
+      await this.httpService.callPaymentsServer(request, response, 'api/pro_users/stripe-setup-intent/offline', request.body)
 
-  @httpPost('/payments/stripe-setup-intent/offline')
-  async createOfflineStripeSetupIntent(request: Request, response: Response): Promise<void> {
-    await this.httpService.callPaymentsServer(request, response, 'api/pro_users/stripe-setup-intent/offline', request.body)
+      return
+    }
+
+    await this.httpService.callPaymentsServer(request, response, 'api/pro_users/stripe-setup-intent', request.body)
   }
 
   @httpPost('/payments/stripe-update-payment-method', TYPES.SubscriptionTokenAuthMiddleware)
