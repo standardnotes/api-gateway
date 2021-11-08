@@ -22,4 +22,9 @@ export class OfflineController extends BaseHttpController {
   async createOfflineSubscriptionToken(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, 'offline/subscription-tokens', request.body)
   }
+
+  @httpPost('/payments/stripe-setup-intent')
+  async createStripeSetupIntent(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'api/pro_users/stripe-setup-intent/offline', request.body)
+  }
 }
