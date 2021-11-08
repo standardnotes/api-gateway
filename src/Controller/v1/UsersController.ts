@@ -15,6 +15,11 @@ export class UsersController extends BaseHttpController {
     super()
   }
 
+  @httpPost('/claim-account')
+  async claimAccount(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'api/pro_users/claim-account', request.body)
+  }
+
   @httpPatch('/:userId', TYPES.AuthMiddleware)
   async updateUser(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, `users/${request.params.userId}`, request.body)
