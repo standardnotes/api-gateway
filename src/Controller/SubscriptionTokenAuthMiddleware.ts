@@ -68,10 +68,12 @@ export class SubscriptionTokenAuthMiddleware extends BaseMiddleware {
       if (response.locals.tokenAuthenticationMethod == TokenAuthenticationMethod.OfflineSubscriptionToken) {
         this.handleOfflineAuthTokenValidationResponse(response, authResponse)
 
-        return
+        return next()
       }
 
       this.handleAuthTokenValidationResponse(response, authResponse)
+
+      return next()
     } catch (error) {
       this.logger.error(`Could not pass the request to ${this.authServerUrl}/subscription-tokens/${subscriptionToken}/validate on underlying service: ${error.response ? JSON.stringify(error.response.body) : error.message}`)
 
@@ -84,8 +86,6 @@ export class SubscriptionTokenAuthMiddleware extends BaseMiddleware {
 
       return
     }
-
-    return next()
   }
 
   private handleOfflineAuthTokenValidationResponse(response: Response, authResponse: AxiosResponse) {
