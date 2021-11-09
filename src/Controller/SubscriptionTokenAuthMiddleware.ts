@@ -35,6 +35,8 @@ export class SubscriptionTokenAuthMiddleware extends BaseMiddleware {
 
     response.locals.tokenAuthenticationMethod = email ? TokenAuthenticationMethod.OfflineSubscriptionToken : TokenAuthenticationMethod.SubscriptionToken
 
+    this.logger.debug(`Authenticating with: ${response.locals.tokenAuthenticationMethod}`)
+
     try {
       const url = response.locals.tokenAuthenticationMethod == TokenAuthenticationMethod.OfflineSubscriptionToken ?
         `${this.authServerUrl}/offline/subscription-tokens/${subscriptionToken}/validate` :
