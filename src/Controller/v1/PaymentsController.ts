@@ -117,15 +117,9 @@ export class PaymentsController extends BaseHttpController {
     await this.httpService.callPaymentsServer(request, response, `api/email_subscriptions/${request.params.token}/unsubscribe`, request.body)
   }
 
-
-  @httpPost('/pro_users/stripe-setup-intent', TYPES.SubscriptionTokenAuthMiddleware)
+  @httpPost('/payments/stripe-setup-intent', TYPES.SubscriptionTokenAuthMiddleware)
   async createStripeSetupIntent(request: Request, response: Response): Promise<void> {
-    await this.httpService.callPaymentsServer(request, response, 'pro_users/stripe-setup-intent', request.body)
-  }
-
-  @httpPost('/pro_users/stripe-setup-intent/offline')
-  async createOfflineStripeSetupIntent(request: Request, response: Response): Promise<void> {
-    await this.httpService.callPaymentsServer(request, response, 'pro_users/stripe-setup-intent/offline', request.body)
+    await this.httpService.callPaymentsServer(request, response, 'api/pro_users/stripe-setup-intent', request.body)
   }
 
   @all('/pro_users(/*)?')
@@ -136,14 +130,5 @@ export class PaymentsController extends BaseHttpController {
   @all('/refunds')
   async refunds(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, 'api/refunds', request.body)
-  }
-
-  @httpGet('/purchase', TYPES.SubscriptionTokenAuthMiddleware)
-  async getPurchasePage(request: Request, response: Response): Promise<void> {
-    await this.httpService.callPaymentsServer(
-      request,
-      response,
-      `api/purchase?subscription_token=${request.query.subscription_token}&success_url=${request.query.success_url}`
-    )
   }
 }

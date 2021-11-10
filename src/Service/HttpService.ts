@@ -57,6 +57,10 @@ export class HttpService implements HttpServiceInterface {
         headers['X-Auth-Token'] = response.locals.authToken
       }
 
+      if (response.locals.offlineAuthToken) {
+        headers['X-Auth-Offline-Token'] = response.locals.offlineAuthToken
+      }
+
       this.logger.debug(`Calling [${request.method}] ${serverUrl}/${endpoint},
         headers: ${JSON.stringify(headers)},
         query: ${JSON.stringify(request.query)},

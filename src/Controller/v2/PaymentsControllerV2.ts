@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { BaseHttpController, controller, httpGet } from 'inversify-express-utils'
+import { BaseHttpController, controller, httpDelete, httpGet, httpPatch } from 'inversify-express-utils'
 import { inject } from 'inversify'
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
@@ -13,7 +13,27 @@ export class PaymentsControllerV2 extends BaseHttpController {
   }
 
   @httpGet('/subscriptions')
-  async subscriptions(request: Request, response: Response): Promise<void> {
+  async getSubscriptionsWithFeatures(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, 'api/subscriptions/features', request.body)
+  }
+
+  @httpGet('/subscriptions/tailored', TYPES.SubscriptionTokenAuthMiddleware)
+  async getTailoredSubscriptionsWithFeatures(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'api/subscriptions/features', request.body)
+  }
+
+  @httpGet('/subscriptions/:subscriptionId', TYPES.SubscriptionTokenAuthMiddleware)
+  async getSubscription(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, `api/subscriptions/${request.params.subscriptionId}`, request.body)
+  }
+
+  @httpDelete('/subscriptions/:subscriptionId', TYPES.SubscriptionTokenAuthMiddleware)
+  async cancelSubscription(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, `api/subscriptions/${request.params.subscriptionId}`, request.body)
+  }
+
+  @httpPatch('/subscriptions/:subscriptionId', TYPES.SubscriptionTokenAuthMiddleware)
+  async updateSubscription(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, `api/subscriptions/${request.params.subscriptionId}`, request.body)
   }
 }
