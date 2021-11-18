@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { BaseHttpController, controller, httpDelete, httpGet, httpPatch } from 'inversify-express-utils'
+import { BaseHttpController, controller, httpDelete, httpGet, httpPatch, httpPost } from 'inversify-express-utils'
 import { inject } from 'inversify'
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
@@ -20,6 +20,16 @@ export class PaymentsControllerV2 extends BaseHttpController {
   @httpGet('/subscriptions/tailored', TYPES.SubscriptionTokenAuthMiddleware)
   async getTailoredSubscriptionsWithFeatures(request: Request, response: Response): Promise<void> {
     await this.httpService.callPaymentsServer(request, response, 'api/subscriptions/features', request.body)
+  }
+
+  @httpGet('/subscriptions/deltas', TYPES.SubscriptionTokenAuthMiddleware)
+  async getSubscriptionDeltasForChangingPlan(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'api/subscriptions/deltas', request.body)
+  }
+
+  @httpPost('/subscriptions/deltas/apply', TYPES.SubscriptionTokenAuthMiddleware)
+  async applySubscriptionDelta(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'api/subscriptions/deltas/apply', request.body)
   }
 
   @httpGet('/subscriptions/:subscriptionId', TYPES.SubscriptionTokenAuthMiddleware)
