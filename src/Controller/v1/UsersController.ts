@@ -20,6 +20,11 @@ export class UsersController extends BaseHttpController {
     await this.httpService.callPaymentsServer(request, response, 'api/pro_users/claim-account', request.body)
   }
 
+  @httpPost('/send-activation-code', TYPES.SubscriptionTokenAuthMiddleware)
+  async sendActivationCode(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'api/pro_users/send-activation-code', request.body)
+  }
+
   @httpPatch('/:userId', TYPES.AuthMiddleware)
   async updateUser(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, `users/${request.params.userId}`, request.body)
