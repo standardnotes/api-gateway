@@ -31,4 +31,9 @@ export class ActionsController extends BaseHttpController {
   async methods(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, 'auth/methods', request.body)
   }
+
+  @httpGet('/failed-backups-emails/mute/:settingUuid')
+  async muteFailedBackupsEmails(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, `settings/email_backup/${request.params.settingUuid}/mute`, request.body)
+  }
 }
