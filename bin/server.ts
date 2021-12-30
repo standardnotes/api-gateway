@@ -30,6 +30,9 @@ import { Env } from '../src/Bootstrap/Env'
 
 const container = new ContainerConfigLoader
 void container.load().then(container => {
+  const env: Env = new Env()
+  env.load()
+
   const server = new InversifyExpressServer(container)
 
   server.setConfig((app) => {
@@ -99,9 +102,6 @@ void container.load().then(container => {
   })
 
   const serverInstance = server.build()
-
-  const env: Env = new Env()
-  env.load()
 
   serverInstance.listen(env.get('PORT'))
 
