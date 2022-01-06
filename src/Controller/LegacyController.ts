@@ -4,7 +4,7 @@ import { controller, all, BaseHttpController, httpPost, httpGet, results, httpDe
 import TYPES from '../Bootstrap/Types'
 import { HttpServiceInterface } from '../Service/HttpClientInterface'
 
-@controller('')
+@controller('', TYPES.AnalyticsMiddleware)
 export class LegacyController extends BaseHttpController {
   private AUTH_ROUTES: Map<string, string>
   private PARAMETRIZED_AUTH_ROUTES: Map<string, string>

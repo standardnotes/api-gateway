@@ -1,5 +1,6 @@
 import * as winston from 'winston'
 import axios, { AxiosInstance } from 'axios'
+import * as IORedis from 'ioredis'
 import { Container } from 'inversify'
 
 import { Env } from './Env'
@@ -8,6 +9,9 @@ import { AuthMiddleware } from '../Controller/AuthMiddleware'
 import { HttpServiceInterface } from '../Service/HttpClientInterface'
 import { HttpService } from '../Service/HttpService'
 import { SubscriptionTokenAuthMiddleware } from '../Controller/SubscriptionTokenAuthMiddleware'
+import { AnalyticsStoreInterface } from '../Service/AnalyticsStoreInterface'
+import { RedisAnalyticsStore } from '../Infra/Redis/RedisAnalyticsStore'
+import { AnalyticsMiddleware } from '../Controller/AnalyticsMiddleware'
 
 export class ContainerConfigLoader {
   async load(): Promise<Container> {
@@ -28,6 +32,17 @@ export class ContainerConfigLoader {
     })
     container.bind<winston.Logger>(TYPES.Logger).toConstantValue(logger)
 
+    const redisUrl = env.get('REDIS_URL')
+    const isRedisInClusterMode = redisUrl.indexOf(',') > 0
+    let redis
+    if (isRedisInClusterMode) {
+      redis = new IORedis.Cluster(redisUrl.split(','))
+    } else {
+      redis = new IORedis(redisUrl)
+    }
+
+    container.bind(TYPES.Redis).toConstantValue(redis)
+
     container.bind<AxiosInstance>(TYPES.HTTPClient).toConstantValue(axios.create())
 
     // env vars
@@ -41,9 +56,11 @@ export class ContainerConfigLoader {
     // Middleware
     container.bind<AuthMiddleware>(TYPES.AuthMiddleware).to(AuthMiddleware)
     container.bind<SubscriptionTokenAuthMiddleware>(TYPES.SubscriptionTokenAuthMiddleware).to(SubscriptionTokenAuthMiddleware)
+    container.bind<AnalyticsMiddleware>(TYPES.AnalyticsMiddleware).to(AnalyticsMiddleware)
 
     // Services
     container.bind<HttpServiceInterface>(TYPES.HTTPService).to(HttpService)
+    container.bind<AnalyticsStoreInterface>(TYPES.AnalyticsStore).to(RedisAnalyticsStore)
 
     return container
   }

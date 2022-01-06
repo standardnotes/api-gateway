@@ -5,7 +5,7 @@ import { BaseHttpController, controller, httpPost } from 'inversify-express-util
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
 
-@controller('/v1/subscription-tokens')
+@controller('/v1/subscription-tokens', TYPES.AnalyticsMiddleware)
 export class TokensController extends BaseHttpController {
   constructor(
     @inject(TYPES.HTTPService) private httpService: HttpServiceInterface,

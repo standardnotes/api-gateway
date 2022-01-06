@@ -5,7 +5,7 @@ import { BaseHttpController, controller, httpGet, httpPost } from 'inversify-exp
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
 
-@controller('/v1/offline')
+@controller('/v1/offline', TYPES.AnalyticsMiddleware)
 export class OfflineController extends BaseHttpController {
   constructor(
     @inject(TYPES.HTTPService) private httpService: HttpServiceInterface,

@@ -6,7 +6,7 @@ import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
 import { TokenAuthenticationMethod } from '../TokenAuthenticationMethod'
 
-@controller('/v1/users')
+@controller('/v1/users', TYPES.AnalyticsMiddleware)
 export class UsersController extends BaseHttpController {
   constructor(
     @inject(TYPES.HTTPService) private httpService: HttpServiceInterface,
