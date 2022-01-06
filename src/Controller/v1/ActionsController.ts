@@ -4,7 +4,7 @@ import { BaseHttpController, controller, httpGet, httpPost } from 'inversify-exp
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
 
-@controller('/v1')
+@controller('/v1', TYPES.AnalyticsMiddleware)
 export class ActionsController extends BaseHttpController {
   constructor(
     @inject(TYPES.HTTPService) private httpService: HttpServiceInterface,
@@ -30,5 +30,10 @@ export class ActionsController extends BaseHttpController {
   @httpGet('/auth/methods')
   async methods(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, 'auth/methods', request.body)
+  }
+
+  @httpGet('/failed-backups-emails/mute/:settingUuid')
+  async muteFailedBackupsEmails(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, `settings/email_backup/${request.params.settingUuid}/mute`, request.body)
   }
 }

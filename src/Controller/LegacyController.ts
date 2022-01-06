@@ -4,7 +4,7 @@ import { controller, all, BaseHttpController, httpPost, httpGet, results, httpDe
 import TYPES from '../Bootstrap/Types'
 import { HttpServiceInterface } from '../Service/HttpClientInterface'
 
-@controller('')
+@controller('', TYPES.AnalyticsMiddleware)
 export class LegacyController extends BaseHttpController {
   private AUTH_ROUTES: Map<string, string>
   private PARAMETRIZED_AUTH_ROUTES: Map<string, string>
@@ -59,7 +59,7 @@ export class LegacyController extends BaseHttpController {
   @all('*')
   async legacyProxyToSyncingServer(request: Request, response: Response): Promise<void> {
     if (request.path === '/') {
-      response.send('Welcome to Standard Notes server infrastructure. To learn more head over to: https://docs.standardnotes.com')
+      response.send('Welcome to the Standard Notes server infrastructure. Learn more at https://docs.standardnotes.com')
 
       return
     }
