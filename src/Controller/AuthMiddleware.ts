@@ -45,8 +45,6 @@ export class AuthMiddleware extends BaseMiddleware {
         url: `${this.authServerUrl}/sessions/validate`,
       })
 
-      this.logger.debug('Auth validation status %s response: %O', authResponse.status, authResponse.data)
-
       if (authResponse.status > 200) {
         response.setHeader('content-type', authResponse.headers['content-type'])
         response.status(authResponse.status).send(authResponse.data)

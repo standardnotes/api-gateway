@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import { inject } from 'inversify'
 import { controller, all, BaseHttpController, httpPost, httpGet, results, httpDelete } from 'inversify-express-utils'
-import { Logger } from 'winston'
 import TYPES from '../Bootstrap/Types'
 import { HttpServiceInterface } from '../Service/HttpClientInterface'
 
@@ -12,7 +11,6 @@ export class LegacyController extends BaseHttpController {
 
   constructor(
     @inject(TYPES.HTTPService) private httpService: HttpServiceInterface,
-    @inject(TYPES.Logger) private logger: Logger,
   ) {
     super()
 
@@ -69,15 +67,11 @@ export class LegacyController extends BaseHttpController {
     if (this.shouldBeRedirectedToAuthService(request)) {
       const methodAndPath = this.getMethodAndPath(request)
 
-      this.logger.debug(`Proxying legacy request to auth from: [${request.method}] ${request.path} to: [${methodAndPath.method}] ${methodAndPath.path}`)
-
       request.method = methodAndPath.method
       await this.httpService.callAuthServerWithLegacyFormat(request, response, methodAndPath.path, request.body)
 
       return
     }
-
-    this.logger.debug(`Proxying legacy request to syncing server for: ${request.method}:${request.path}`)
 
     await this.httpService.callLegacySyncingServer(request, response, request.path.substring(1), request.body)
   }
