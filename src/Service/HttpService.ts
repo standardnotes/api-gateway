@@ -98,8 +98,8 @@ export class HttpService implements HttpServiceInterface {
   private async callServer(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<void> {
     const serviceResponse = await this.getServerResponse(serverUrl, request, response, endpoint, payload)
 
-    this.logger.debug('Response from underlying server: %O', serviceResponse?.data)
-    this.logger.debug('Response headers from underlying legacy server: %O', serviceResponse?.headers)
+    this.logger.debug(`Response from underlying server: ${JSON.stringify(serviceResponse?.data)},
+      headers: ${JSON.stringify(serviceResponse?.headers)}`)
 
     if (!serviceResponse) {
       return
@@ -120,9 +120,6 @@ export class HttpService implements HttpServiceInterface {
 
   private async callServerWithLegacyFormat(serverUrl: string, request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<void> {
     const serviceResponse = await this.getServerResponse(serverUrl, request, response, endpoint, payload)
-
-    this.logger.debug('Response body from underlying legacy server: %O', serviceResponse?.data)
-    this.logger.debug('Response headers from underlying legacy server: %O', serviceResponse?.headers)
 
     if (!serviceResponse) {
       return
