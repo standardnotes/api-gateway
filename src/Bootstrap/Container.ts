@@ -2,6 +2,9 @@ import * as winston from 'winston'
 import axios, { AxiosInstance } from 'axios'
 import * as IORedis from 'ioredis'
 import { Container } from 'inversify'
+import * as AWS from 'aws-sdk'
+
+import { RedisDomainEventPublisher, SNSDomainEventPublisher } from '@standardnotes/domain-events-infra'
 
 import { Env } from './Env'
 import TYPES from './Types'
@@ -40,8 +43,14 @@ export class ContainerConfigLoader {
     } else {
       redis = new IORedis(redisUrl)
     }
-
     container.bind(TYPES.Redis).toConstantValue(redis)
+
+    if (env.get('SNS_AWS_REGION', true)) {
+      container.bind<AWS.SNS>(TYPES.SNS).toConstantValue(new AWS.SNS({
+        apiVersion: 'latest',
+        region: env.get('SNS_AWS_REGION', true),
+      }))
+    }
 
     container.bind<AxiosInstance>(TYPES.HTTPClient).toConstantValue(axios.create())
 
@@ -52,6 +61,9 @@ export class ContainerConfigLoader {
     container.bind(TYPES.AUTH_JWT_SECRET).toConstantValue(env.get('AUTH_JWT_SECRET'))
     container.bind(TYPES.HTTP_CALL_TIMEOUT).toConstantValue(env.get('HTTP_CALL_TIMEOUT', true) ? +env.get('HTTP_CALL_TIMEOUT', true) : 60_000)
     container.bind(TYPES.VERSION).toConstantValue(env.get('VERSION'))
+    container.bind(TYPES.SNS_TOPIC_ARN).toConstantValue(env.get('SNS_TOPIC_ARN', true))
+    container.bind(TYPES.SNS_AWS_REGION).toConstantValue(env.get('SNS_AWS_REGION', true))
+    container.bind(TYPES.REDIS_EVENTS_CHANNEL).toConstantValue(env.get('REDIS_EVENTS_CHANNEL'))
 
     // Middleware
     container.bind<AuthMiddleware>(TYPES.AuthMiddleware).to(AuthMiddleware)
@@ -61,6 +73,22 @@ export class ContainerConfigLoader {
     // Services
     container.bind<HttpServiceInterface>(TYPES.HTTPService).to(HttpService)
     container.bind<AnalyticsStoreInterface>(TYPES.AnalyticsStore).to(RedisAnalyticsStore)
+
+    if (env.get('SNS_TOPIC_ARN', true)) {
+      container.bind<SNSDomainEventPublisher>(TYPES.DomainEventPublisher).toConstantValue(
+        new SNSDomainEventPublisher(
+          container.get(TYPES.SNS),
+          container.get(TYPES.SNS_TOPIC_ARN)
+        )
+      )
+    } else {
+      container.bind<RedisDomainEventPublisher>(TYPES.DomainEventPublisher).toConstantValue(
+        new RedisDomainEventPublisher(
+          container.get(TYPES.Redis),
+          container.get(TYPES.REDIS_EVENTS_CHANNEL)
+        )
+      )
+    }
 
     return container
   }
