@@ -4,7 +4,7 @@ import { BaseHttpController, controller, httpGet } from 'inversify-express-utils
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
 
-@controller('/v1/items/:item_id/revisions', TYPES.AuthMiddleware)
+@controller('/v1/items/:item_id/revisions', TYPES.AnalyticsMiddleware, TYPES.AuthMiddleware)
 export class RevisionsController extends BaseHttpController {
   constructor(
     @inject(TYPES.HTTPService) private httpService: HttpServiceInterface,

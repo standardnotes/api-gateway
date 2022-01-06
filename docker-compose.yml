@@ -16,6 +16,17 @@ services:
     volumes:
       - .:/var/www
 
+  cache:
+    image: redis:6.0-alpine
+    volumes:
+      - ./data/redis/:/data
+    expose:
+      - 6379
+    ports:
+      - 6380:6379
+    networks:
+      - api_gateway
+
 networks:
   api_gateway:
     name: api_gateway
