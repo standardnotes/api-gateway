@@ -16,6 +16,11 @@ case "$COMMAND" in
     yarn start
     ;;
 
+  'report' )
+    echo "Starting Usage Report Generation..."
+    yarn report
+    ;;
+
    * )
     echo "Unknown command"
     ;;
