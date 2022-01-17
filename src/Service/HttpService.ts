@@ -11,10 +11,11 @@ export class HttpService implements HttpServiceInterface {
   constructor(
     @inject(TYPES.HTTPClient) private httpClient: AxiosInstance,
     @inject(TYPES.AUTH_SERVER_URL) private authServerUrl: string,
+    @inject(TYPES.FILES_SERVER_URL) private filesServerUrl: string,
     @inject(TYPES.SYNCING_SERVER_JS_URL) private syncingServerJsUrl: string,
     @inject(TYPES.PAYMENTS_SERVER_URL) private paymentsServerUrl: string,
     @inject(TYPES.HTTP_CALL_TIMEOUT) private httpCallTimeout: number,
-    @inject(TYPES.Logger) private logger: Logger
+    @inject(TYPES.Logger) private logger: Logger,
   ) {
   }
 
@@ -28,6 +29,16 @@ export class HttpService implements HttpServiceInterface {
 
   async callAuthServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<void> {
     await this.callServer(this.authServerUrl, request, response, endpoint, payload)
+  }
+
+  async callFilesServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<void> {
+    if (!this.filesServerUrl === undefined) {
+      this.logger.debug('Files Server URL not defined. Skipped request to Files API.')
+
+      return
+    }
+
+    await this.callServer(this.filesServerUrl, request, response, endpoint, payload)
   }
 
   async callPaymentsServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<void> {
