@@ -15,6 +15,6 @@ export class FilesController extends BaseHttpController {
 
   @httpPost('/valet-tokens', TYPES.AuthMiddleware)
   async createToken(request: Request, response: Response): Promise<void> {
-    await this.httpService.callFilesServer(request, response, 'valet-tokens', request.body)
+    await this.httpService.callAuthServer(request, response, 'valet-tokens', request.body)
   }
 }
