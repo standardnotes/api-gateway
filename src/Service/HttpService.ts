@@ -14,7 +14,7 @@ export class HttpService implements HttpServiceInterface {
     @inject(TYPES.SYNCING_SERVER_JS_URL) private syncingServerJsUrl: string,
     @inject(TYPES.PAYMENTS_SERVER_URL) private paymentsServerUrl: string,
     @inject(TYPES.HTTP_CALL_TIMEOUT) private httpCallTimeout: number,
-    @inject(TYPES.Logger) private logger: Logger
+    @inject(TYPES.Logger) private logger: Logger,
   ) {
   }
 
@@ -31,7 +31,7 @@ export class HttpService implements HttpServiceInterface {
   }
 
   async callPaymentsServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<void> {
-    if (!this.paymentsServerUrl === undefined) {
+    if (!this.paymentsServerUrl) {
       this.logger.debug('Payments Server URL not defined. Skipped request to Payments API.')
 
       return
