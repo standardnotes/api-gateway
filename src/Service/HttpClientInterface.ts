@@ -6,5 +6,4 @@ export interface HttpServiceInterface {
   callSyncingServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<void>
   callLegacySyncingServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<void>
   callPaymentsServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<void>
-  callFilesServer(request: Request, response: Response, endpoint: string, payload?: Record<string, unknown> | string): Promise<void>
 }
