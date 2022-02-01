@@ -52,6 +52,11 @@ export class UsersController extends BaseHttpController {
     return this.statusCode(401)
   }
 
+  @httpPost('/:userUuid/integrations/listed', TYPES.AuthMiddleware)
+  async createListedAccount(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, 'listed', request.body)
+  }
+
   @httpPost('/')
   async register(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, 'auth', request.body)
