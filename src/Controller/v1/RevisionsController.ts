@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { inject } from 'inversify'
-import { BaseHttpController, controller, httpGet } from 'inversify-express-utils'
+import { BaseHttpController, controller, httpDelete, httpGet } from 'inversify-express-utils'
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
 
@@ -19,6 +19,11 @@ export class RevisionsController extends BaseHttpController {
 
   @httpGet('/:id')
   async getRevision(request: Request, response: Response): Promise<void> {
+    await this.httpService.callSyncingServer(request, response, `items/${request.params.item_id}/revisions/${request.params.id}`)
+  }
+
+  @httpDelete('/:id')
+  async deleteRevision(request: Request, response: Response): Promise<void> {
     await this.httpService.callSyncingServer(request, response, `items/${request.params.item_id}/revisions/${request.params.id}`)
   }
 }
