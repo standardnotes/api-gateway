@@ -34,11 +34,11 @@ export class ActionsController extends BaseHttpController {
 
   @httpGet('/failed-backups-emails/mute/:settingUuid')
   async muteFailedBackupsEmails(request: Request, response: Response): Promise<void> {
-    await this.httpService.callAuthServer(request, response, `settings/email_backup/${request.params.settingUuid}/mute`, request.body)
+    await this.httpService.callAuthServer(request, response, `internal/settings/email_backup/${request.params.settingUuid}/mute`, request.body)
   }
 
   @httpGet('/sign-in-emails/mute/:settingUuid')
   async muteSignInEmails(request: Request, response: Response): Promise<void> {
-    await this.httpService.callAuthServer(request, response, `settings/sign_in/${request.params.settingUuid}/mute`, request.body)
+    await this.httpService.callAuthServer(request, response, `internal/settings/sign_in/${request.params.settingUuid}/mute`, request.body)
   }
 }
