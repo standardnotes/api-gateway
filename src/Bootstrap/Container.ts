@@ -3,7 +3,7 @@ import axios, { AxiosInstance } from 'axios'
 import * as IORedis from 'ioredis'
 import { Container } from 'inversify'
 import * as AWS from 'aws-sdk'
-
+import { AnalyticsStoreInterface, RedisAnalyticsStore } from '@standardnotes/analytics'
 import { RedisDomainEventPublisher, SNSDomainEventPublisher } from '@standardnotes/domain-events-infra'
 
 import { Env } from './Env'
@@ -12,8 +12,6 @@ import { AuthMiddleware } from '../Controller/AuthMiddleware'
 import { HttpServiceInterface } from '../Service/HttpClientInterface'
 import { HttpService } from '../Service/HttpService'
 import { SubscriptionTokenAuthMiddleware } from '../Controller/SubscriptionTokenAuthMiddleware'
-import { AnalyticsStoreInterface } from '../Service/AnalyticsStoreInterface'
-import { RedisAnalyticsStore } from '../Infra/Redis/RedisAnalyticsStore'
 import { AnalyticsMiddleware } from '../Controller/AnalyticsMiddleware'
 
 export class ContainerConfigLoader {
@@ -73,7 +71,9 @@ export class ContainerConfigLoader {
 
     // Services
     container.bind<HttpServiceInterface>(TYPES.HTTPService).to(HttpService)
-    container.bind<AnalyticsStoreInterface>(TYPES.AnalyticsStore).to(RedisAnalyticsStore)
+    container.bind<AnalyticsStoreInterface>(TYPES.AnalyticsStore).toConstantValue(new RedisAnalyticsStore(
+      container.get(TYPES.Redis)
+    ))
 
     if (env.get('SNS_TOPIC_ARN', true)) {
       container.bind<SNSDomainEventPublisher>(TYPES.DomainEventPublisher).toConstantValue(

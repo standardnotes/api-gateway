@@ -8,7 +8,7 @@ import { ContainerConfigLoader } from '../src/Bootstrap/Container'
 import TYPES from '../src/Bootstrap/Types'
 import { Env } from '../src/Bootstrap/Env'
 import { DomainEventPublisherInterface, DailyVersionAdoptionReportGeneratedEvent } from '@standardnotes/domain-events'
-import { AnalyticsStoreInterface } from '../src/Service/AnalyticsStoreInterface'
+import { AnalyticsStoreInterface } from '@standardnotes/analytics'
 
 
 const requestReport = async (
@@ -27,6 +27,7 @@ const requestReport = async (
     payload: {
       applicationStatistics: await analyticsStore.getYesterdayApplicationUsage(),
       snjsStatistics: await analyticsStore.getYesterdaySNJSUsage(),
+      outOfSyncIncidents: await analyticsStore.getYesterdayOutOfSyncIncidents(),
     },
   }
 
