@@ -2,8 +2,9 @@ import { NextFunction, Request, Response } from 'express'
 import { inject, injectable } from 'inversify'
 import { BaseMiddleware } from 'inversify-express-utils'
 import { Logger } from 'winston'
+import { AnalyticsStoreInterface } from '@standardnotes/analytics'
+
 import TYPES from '../Bootstrap/Types'
-import { AnalyticsStoreInterface } from '../Service/AnalyticsStoreInterface'
 
 @injectable()
 export class AnalyticsMiddleware extends BaseMiddleware {
