@@ -104,7 +104,7 @@ export class UsersController extends BaseHttpController {
   }
 
   @httpDelete('/:userUuid', TYPES.AuthMiddleware)
-  async deleteUser(_request: Request, _response: Response): Promise<void> {
-    throw Error('Not implemented')
+  async deleteUser(request: Request, response: Response): Promise<void> {
+    await this.httpService.callPaymentsServer(request, response, 'api/account', request.body)
   }
 }
