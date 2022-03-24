@@ -1,5 +1,4 @@
 import * as winston from 'winston'
-import * as newrelicWinstonEnricher from '@newrelic/winston-enricher'
 import axios, { AxiosInstance } from 'axios'
 import * as IORedis from 'ioredis'
 import { Container } from 'inversify'
@@ -15,6 +14,9 @@ import { HttpService } from '../Service/HttpService'
 import { SubscriptionTokenAuthMiddleware } from '../Controller/SubscriptionTokenAuthMiddleware'
 import { AnalyticsMiddleware } from '../Controller/AnalyticsMiddleware'
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const newrelicWinstonEnricher = require('@newrelic/winston-enricher')
+
 export class ContainerConfigLoader {
   async load(): Promise<Container> {
     const env: Env = new Env()
@@ -27,7 +29,7 @@ export class ContainerConfigLoader {
       winston.format.json(),
     ]
     if (env.get('NEW_RELIC_ENABLED', true) === 'true') {
-      winstonFormatters.push(newrelicWinstonEnricher.default())
+      winstonFormatters.push(newrelicWinstonEnricher())
     }
 
     const logger = winston.createLogger({
