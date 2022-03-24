@@ -1,5 +1,5 @@
 import * as winston from 'winston'
-import newrelicWinstonEnricher from '@newrelic/winston-enricher'
+import * as newrelicWinstonEnricher from '@newrelic/winston-enricher'
 import axios, { AxiosInstance } from 'axios'
 import * as IORedis from 'ioredis'
 import { Container } from 'inversify'
@@ -27,7 +27,7 @@ export class ContainerConfigLoader {
       winston.format.json(),
     ]
     if (env.get('NEW_RELIC_ENABLED', true) === 'true') {
-      winstonFormatters.push(newrelicWinstonEnricher())
+      winstonFormatters.push(newrelicWinstonEnricher.default())
     }
 
     const logger = winston.createLogger({
