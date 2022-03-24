@@ -1,5 +1,5 @@
 import * as winston from 'winston'
-import * as newrelicWinstonEnricher from '@newrelic/winston-enricher'
+import newrelicWinstonEnricher = require('@newrelic/winston-enricher')
 import axios, { AxiosInstance } from 'axios'
 import * as IORedis from 'ioredis'
 import { Container } from 'inversify'
