@@ -92,6 +92,11 @@ export class UsersController extends BaseHttpController {
     await this.httpService.callAuthServer(request, response, `users/${request.params.userUuid}/subscription`)
   }
 
+  @httpPost('/:userUuid/subscription/invite', TYPES.AuthMiddleware)
+  async inviteToSubscriptionSharing(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, `users/${request.params.userUuid}/subscription/invite`)
+  }
+
   @httpGet('/subscription', TYPES.SubscriptionTokenAuthMiddleware)
   async getSubscriptionBySubscriptionToken(request: Request, response: Response): Promise<void> {
     if (response.locals.tokenAuthenticationMethod === TokenAuthenticationMethod.OfflineSubscriptionToken) {
