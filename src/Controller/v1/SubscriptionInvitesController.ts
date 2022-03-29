@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { inject } from 'inversify'
-import { BaseHttpController, controller, httpGet, httpPost } from 'inversify-express-utils'
+import { BaseHttpController, controller, httpDelete, httpGet, httpPost } from 'inversify-express-utils'
 
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
@@ -16,6 +16,11 @@ export class SubscriptionInvitesController extends BaseHttpController {
   @httpPost('/', TYPES.AuthMiddleware)
   async inviteToSubscriptionSharing(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, 'subscription-invites')
+  }
+
+  @httpDelete('/:inviteUuid', TYPES.AuthMiddleware)
+  async cancelSubscriptionSharing(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, `subscription-invites/${request.params.inviteUuid}`)
   }
 
   @httpGet('/:inviteUuid/accept')
