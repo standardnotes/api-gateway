@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { inject } from 'inversify'
-import { BaseHttpController, controller, httpPost } from 'inversify-express-utils'
+import { BaseHttpController, controller, httpGet, httpPost } from 'inversify-express-utils'
 
 import TYPES from '../../Bootstrap/Types'
 import { HttpServiceInterface } from '../../Service/HttpClientInterface'
@@ -18,13 +18,13 @@ export class SubscriptionInvitesController extends BaseHttpController {
     await this.httpService.callAuthServer(request, response, 'subscription-invites')
   }
 
-  @httpPost('/:inviteUuid/accept', TYPES.AuthMiddleware)
+  @httpGet('/:inviteUuid/accept', TYPES.AuthMiddleware)
   async acceptInvite(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, `subscription-invites/${request.params.inviteUuid}/accept`)
   }
 
-  @httpPost('/:inviteUuid/decline', TYPES.AuthMiddleware)
-  async acceptInvite(request: Request, response: Response): Promise<void> {
+  @httpGet('/:inviteUuid/decline', TYPES.AuthMiddleware)
+  async declineInvite(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, `subscription-invites/${request.params.inviteUuid}/decline`)
   }
 }
