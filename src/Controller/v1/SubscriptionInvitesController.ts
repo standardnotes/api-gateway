@@ -22,4 +22,9 @@ export class SubscriptionInvitesController extends BaseHttpController {
   async acceptInvite(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, `subscription-invites/${request.params.inviteUuid}/accept`)
   }
+
+  @httpPost('/:inviteUuid/decline', TYPES.AuthMiddleware)
+  async acceptInvite(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, `subscription-invites/${request.params.inviteUuid}/decline`)
+  }
 }
