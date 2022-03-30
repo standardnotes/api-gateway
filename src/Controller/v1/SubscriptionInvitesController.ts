@@ -15,7 +15,7 @@ export class SubscriptionInvitesController extends BaseHttpController {
 
   @httpPost('/', TYPES.AuthMiddleware)
   async inviteToSubscriptionSharing(request: Request, response: Response): Promise<void> {
-    await this.httpService.callAuthServer(request, response, 'subscription-invites')
+    await this.httpService.callAuthServer(request, response, 'subscription-invites', request.body)
   }
 
   @httpDelete('/:inviteUuid', TYPES.AuthMiddleware)
