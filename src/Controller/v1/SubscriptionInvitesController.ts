@@ -18,6 +18,11 @@ export class SubscriptionInvitesController extends BaseHttpController {
     await this.httpService.callAuthServer(request, response, 'subscription-invites', request.body)
   }
 
+  @httpGet('/', TYPES.AuthMiddleware)
+  async listInvites(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, 'subscription-invites', request.body)
+  }
+
   @httpDelete('/:inviteUuid', TYPES.AuthMiddleware)
   async cancelSubscriptionSharing(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, `subscription-invites/${request.params.inviteUuid}`)
