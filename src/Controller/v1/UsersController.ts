@@ -82,6 +82,11 @@ export class UsersController extends BaseHttpController {
     await this.httpService.callAuthServer(request, response, `users/${request.params.userUuid}/settings/${request.params.settingName}`, request.body)
   }
 
+  @httpGet('/:userUuid/subscription-settings/:subscriptionSettingName', TYPES.AuthMiddleware)
+  async getSubscriptionSetting(request: Request, response: Response): Promise<void> {
+    await this.httpService.callAuthServer(request, response, `users/${request.params.userUuid}/subscription-settings/${request.params.subscriptionSettingName}`)
+  }
+
   @httpGet('/:userUuid/features', TYPES.AuthMiddleware)
   async getFeatures(request: Request, response: Response): Promise<void> {
     await this.httpService.callAuthServer(request, response, `users/${request.params.userUuid}/features`)
