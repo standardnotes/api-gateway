@@ -6,6 +6,7 @@ import * as Sentry from '@sentry/node'
 
 import '../src/Controller/LegacyController'
 import '../src/Controller/HealthCheckController'
+
 import '../src/Controller/v1/SessionsController'
 import '../src/Controller/v1/UsersController'
 import '../src/Controller/v1/ActionsController'
@@ -17,8 +18,10 @@ import '../src/Controller/v1/WebSocketsController'
 import '../src/Controller/v1/TokensController'
 import '../src/Controller/v1/OfflineController'
 import '../src/Controller/v1/FilesController'
-import '../src/Controller/v2/PaymentsControllerV2'
 import '../src/Controller/v1/SubscriptionInvitesController'
+
+import '../src/Controller/v2/PaymentsControllerV2'
+import '../src/Controller/v2/ActionsControllerV2'
 
 import * as helmet from 'helmet'
 import * as cors from 'cors'
