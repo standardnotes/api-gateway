@@ -1,4 +1,4 @@
-import { Token } from '@standardnotes/auth'
+import { CrossServiceTokenData } from '@standardnotes/auth'
 import { NextFunction, Request, Response } from 'express'
 import { inject, injectable } from 'inversify'
 import { BaseMiddleware } from 'inversify-express-utils'
@@ -54,7 +54,7 @@ export class AuthMiddleware extends BaseMiddleware {
 
       response.locals.authToken = authResponse.data.authToken
 
-      const decodedToken = <Token> verify(authResponse.data.authToken, this.jwtSecret, { algorithms: [ 'HS256' ] })
+      const decodedToken = <CrossServiceTokenData> verify(authResponse.data.authToken, this.jwtSecret, { algorithms: [ 'HS256' ] })
 
       response.locals.userUuid = decodedToken.user.uuid
       response.locals.roles = decodedToken.roles
