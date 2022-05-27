@@ -1,5 +1,10 @@
 export interface CrossServiceTokenCacheInterface {
-  set(authorizationHeaderValue: string, encodedCrossServiceToken: string, expiresInSeconds: number): Promise<void>
+  set(dto: {
+    authorizationHeaderValue: string,
+    encodedCrossServiceToken: string,
+    expiresInSeconds: number,
+    userUuid: string
+  }): Promise<void>
   get(authorizationHeaderValue: string): Promise<string | null>
-  invalidate(authorizationHeaderValue: string): Promise<void>
+  invalidate(userUuid: string): Promise<void>
 }

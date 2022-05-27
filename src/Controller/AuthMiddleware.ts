@@ -37,6 +37,7 @@ export class AuthMiddleware extends BaseMiddleware {
     }
 
     try {
+      let crossServiceTokenFetchedFromCache = true
       let crossServiceToken = null
       if (this.crossServiceTokenCacheTTL) {
         crossServiceToken = await this.crossServiceTokenCache.get(authHeaderValue)
@@ -62,16 +63,22 @@ export class AuthMiddleware extends BaseMiddleware {
           return
         }
 
-        if (this.crossServiceTokenCacheTTL) {
-          await this.crossServiceTokenCache.set(authHeaderValue, authResponse.data.authToken, this.crossServiceTokenCacheTTL)
-        }
-
         crossServiceToken = authResponse.data.authToken
+        crossServiceTokenFetchedFromCache = false
       }
 
       response.locals.authToken = crossServiceToken
 
       const decodedToken = <CrossServiceTokenData> verify(crossServiceToken, this.jwtSecret, { algorithms: [ 'HS256' ] })
+
+      if (this.crossServiceTokenCacheTTL && !crossServiceTokenFetchedFromCache) {
+        await this.crossServiceTokenCache.set({
+          authorizationHeaderValue: authHeaderValue,
+          encodedCrossServiceToken: crossServiceToken,
+          expiresInSeconds: this.crossServiceTokenCacheTTL,
+          userUuid: decodedToken.user.uuid,
+        })
+      }
 
       response.locals.userUuid = decodedToken.user.uuid
       response.locals.roles = decodedToken.roles
