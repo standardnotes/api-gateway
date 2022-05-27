@@ -3,7 +3,7 @@ import { inject } from 'inversify'
 import { BaseHttpController, controller, httpPost } from 'inversify-express-utils'
 
 import TYPES from '../../Bootstrap/Types'
-import { HttpServiceInterface } from '../../Service/HttpClientInterface'
+import { HttpServiceInterface } from '../../Service/Http/HttpServiceInterface'
 
 @controller('/v2', TYPES.AnalyticsMiddleware)
 export class ActionsControllerV2 extends BaseHttpController {
