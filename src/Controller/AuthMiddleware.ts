@@ -5,7 +5,9 @@ import { BaseMiddleware } from 'inversify-express-utils'
 import { verify } from 'jsonwebtoken'
 import { AxiosInstance } from 'axios'
 import { Logger } from 'winston'
+
 import TYPES from '../Bootstrap/Types'
+import { CrossServiceTokenCacheInterface } from '../Service/Cache/CrossServiceTokenCacheInterface'
 
 @injectable()
 export class AuthMiddleware extends BaseMiddleware {
@@ -13,6 +15,8 @@ export class AuthMiddleware extends BaseMiddleware {
     @inject(TYPES.HTTPClient) private httpClient: AxiosInstance,
     @inject(TYPES.AUTH_SERVER_URL) private authServerUrl: string,
     @inject(TYPES.AUTH_JWT_SECRET) private jwtSecret: string,
+    @inject(TYPES.CROSS_SERVICE_TOKEN_CACHE_TTL) private crossServiceTokenCacheTTL: number,
+    @inject(TYPES.CrossServiceTokenCache) private crossServiceTokenCache: CrossServiceTokenCacheInterface,
     @inject(TYPES.Logger) private logger: Logger
   ) {
     super()
@@ -33,28 +37,41 @@ export class AuthMiddleware extends BaseMiddleware {
     }
 
     try {
-      const authResponse = await this.httpClient.request({
-        method: 'POST',
-        headers: {
-          'Authorization': authHeaderValue,
-          'Accept': 'application/json',
-        },
-        validateStatus: (status: number) => {
-          return status >= 200 && status < 500
-        },
-        url: `${this.authServerUrl}/sessions/validate`,
-      })
-
-      if (authResponse.status > 200) {
-        response.setHeader('content-type', authResponse.headers['content-type'])
-        response.status(authResponse.status).send(authResponse.data)
-
-        return
+      let crossServiceToken = null
+      if (this.crossServiceTokenCacheTTL) {
+        crossServiceToken = await this.crossServiceTokenCache.get(authHeaderValue)
       }
 
-      response.locals.authToken = authResponse.data.authToken
+      if (crossServiceToken === null) {
+        const authResponse = await this.httpClient.request({
+          method: 'POST',
+          headers: {
+            'Authorization': authHeaderValue,
+            'Accept': 'application/json',
+          },
+          validateStatus: (status: number) => {
+            return status >= 200 && status < 500
+          },
+          url: `${this.authServerUrl}/sessions/validate`,
+        })
 
-      const decodedToken = <CrossServiceTokenData> verify(authResponse.data.authToken, this.jwtSecret, { algorithms: [ 'HS256' ] })
+        if (authResponse.status > 200) {
+          response.setHeader('content-type', authResponse.headers['content-type'])
+          response.status(authResponse.status).send(authResponse.data)
+
+          return
+        }
+
+        if (this.crossServiceTokenCacheTTL) {
+          await this.crossServiceTokenCache.set(authHeaderValue, authResponse.data.authToken, this.crossServiceTokenCacheTTL)
+        }
+
+        crossServiceToken = authResponse.data.authToken
+      }
+
+      response.locals.authToken = crossServiceToken
+
+      const decodedToken = <CrossServiceTokenData> verify(crossServiceToken, this.jwtSecret, { algorithms: [ 'HS256' ] })
 
       response.locals.userUuid = decodedToken.user.uuid
       response.locals.roles = decodedToken.roles
