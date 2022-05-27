@@ -3,7 +3,7 @@ import { inject } from 'inversify'
 import { all, BaseHttpController, controller, httpDelete, httpGet, httpPatch, httpPost, httpPut, results } from 'inversify-express-utils'
 import { Logger } from 'winston'
 import TYPES from '../../Bootstrap/Types'
-import { HttpServiceInterface } from '../../Service/HttpClientInterface'
+import { HttpServiceInterface } from '../../Service/Http/HttpServiceInterface'
 import { TokenAuthenticationMethod } from '../TokenAuthenticationMethod'
 
 @controller('/v1/users', TYPES.AnalyticsMiddleware)

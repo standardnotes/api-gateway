@@ -9,8 +9,8 @@ import { RedisDomainEventPublisher, SNSDomainEventPublisher } from '@standardnot
 import { Env } from './Env'
 import TYPES from './Types'
 import { AuthMiddleware } from '../Controller/AuthMiddleware'
-import { HttpServiceInterface } from '../Service/HttpClientInterface'
-import { HttpService } from '../Service/HttpService'
+import { HttpServiceInterface } from '../Service/Http/HttpServiceInterface'
+import { HttpService } from '../Service/Http/HttpService'
 import { SubscriptionTokenAuthMiddleware } from '../Controller/SubscriptionTokenAuthMiddleware'
 import { AnalyticsMiddleware } from '../Controller/AnalyticsMiddleware'
 

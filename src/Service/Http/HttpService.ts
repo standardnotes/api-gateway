@@ -3,8 +3,8 @@ import { Request, Response } from 'express'
 import { inject, injectable } from 'inversify'
 import { Logger } from 'winston'
 
-import TYPES from '../Bootstrap/Types'
-import { HttpServiceInterface } from './HttpClientInterface'
+import TYPES from '../../Bootstrap/Types'
+import { HttpServiceInterface } from './HttpServiceInterface'
 
 @injectable()
 export class HttpService implements HttpServiceInterface {
