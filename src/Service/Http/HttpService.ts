@@ -4,6 +4,7 @@ import { inject, injectable } from 'inversify'
 import { Logger } from 'winston'
 
 import TYPES from '../../Bootstrap/Types'
+import { CrossServiceTokenCacheInterface } from '../Cache/CrossServiceTokenCacheInterface'
 import { HttpServiceInterface } from './HttpServiceInterface'
 
 @injectable()
@@ -15,6 +16,7 @@ export class HttpService implements HttpServiceInterface {
     @inject(TYPES.PAYMENTS_SERVER_URL) private paymentsServerUrl: string,
     @inject(TYPES.FILES_SERVER_URL) private filesServerUrl: string,
     @inject(TYPES.HTTP_CALL_TIMEOUT) private httpCallTimeout: number,
+    @inject(TYPES.CrossServiceTokenCache) private crossServiceTokenCache: CrossServiceTokenCacheInterface,
     @inject(TYPES.Logger) private logger: Logger,
   ) {
   }
@@ -80,6 +82,11 @@ export class HttpService implements HttpServiceInterface {
           return status >= 200 && status < 500
         },
       })
+
+      if (serviceResponse.headers['X-Invalidate-Cache']) {
+        const userUuid = serviceResponse.headers['X-Invalidate-Cache']
+        await this.crossServiceTokenCache.invalidate(userUuid)
+      }
 
       return serviceResponse
     } catch (error) {
