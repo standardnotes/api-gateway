@@ -83,8 +83,8 @@ export class HttpService implements HttpServiceInterface {
         },
       })
 
-      if (serviceResponse.headers['X-Invalidate-Cache']) {
-        const userUuid = serviceResponse.headers['X-Invalidate-Cache']
+      if (serviceResponse.headers['x-invalidate-cache']) {
+        const userUuid = serviceResponse.headers['x-invalidate-cache']
         await this.crossServiceTokenCache.invalidate(userUuid)
       }
 
