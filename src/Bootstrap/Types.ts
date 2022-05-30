@@ -14,14 +14,17 @@ const TYPES = {
   SNS_TOPIC_ARN: Symbol.for('SNS_TOPIC_ARN'),
   SNS_AWS_REGION: Symbol.for('SNS_AWS_REGION'),
   REDIS_EVENTS_CHANNEL: Symbol.for('REDIS_EVENTS_CHANNEL'),
+  CROSS_SERVICE_TOKEN_CACHE_TTL: Symbol.for('CROSS_SERVICE_TOKEN_CACHE_TTL'),
   // Middleware
   AnalyticsMiddleware: Symbol.for('AnalyticsMiddleware'),
   AuthMiddleware: Symbol.for('AuthMiddleware'),
   SubscriptionTokenAuthMiddleware: Symbol.for('SubscriptionTokenAuthMiddleware'),
   // Services
   HTTPService: Symbol.for('HTTPService'),
+  CrossServiceTokenCache: Symbol.for('CrossServiceTokenCache'),
   AnalyticsStore: Symbol.for('AnalyticsStore'),
   DomainEventPublisher: Symbol.for('DomainEventPublisher'),
+  Timer: Symbol.for('Timer'),
 }
 
 export default TYPES
