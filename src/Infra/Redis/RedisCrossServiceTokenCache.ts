@@ -7,6 +7,7 @@ import { CrossServiceTokenCacheInterface } from '../../Service/Cache/CrossServic
 @injectable()
 export class RedisCrossServiceTokenCache implements CrossServiceTokenCacheInterface {
   private readonly PREFIX = 'cst'
+  private readonly USER_CST_PREFIX = 'user-cst'
 
   constructor(
     @inject(TYPES.Redis) private redisClient: IORedis.Redis,
@@ -21,8 +22,8 @@ export class RedisCrossServiceTokenCache implements CrossServiceTokenCacheInterf
   }): Promise<void> {
     const pipeline = this.redisClient.pipeline()
 
-    pipeline.set(`${this.PREFIX}:${dto.userUuid}:${dto.authorizationHeaderValue}`, dto.encodedCrossServiceToken)
-    pipeline.expireat(`${this.PREFIX}:${dto.userUuid}:${dto.authorizationHeaderValue}`, dto.expiresAtInSeconds)
+    pipeline.sadd(`${this.USER_CST_PREFIX}:${dto.userUuid}`, dto.authorizationHeaderValue)
+    pipeline.expireat(`${this.USER_CST_PREFIX}:${dto.userUuid}`, dto.expiresAtInSeconds)
 
     pipeline.set(`${this.PREFIX}:${dto.authorizationHeaderValue}`, dto.encodedCrossServiceToken)
     pipeline.expireat(`${this.PREFIX}:${dto.authorizationHeaderValue}`, dto.expiresAtInSeconds)
@@ -35,25 +36,14 @@ export class RedisCrossServiceTokenCache implements CrossServiceTokenCacheInterf
   }
 
   async invalidate(userUuid: string): Promise<void> {
-    let cursor = '0'
-    let authorizationHeaderKeys: Array<string> = []
-    do {
-      const scanResult = await this.redisClient.scan(cursor, 'MATCH', `${this.PREFIX}:${userUuid}:*`)
-
-      cursor = scanResult[0]
-      authorizationHeaderKeys = authorizationHeaderKeys.concat(scanResult[1])
-    } while (cursor !== '0')
-
-    if (!authorizationHeaderKeys.length) {
-      return
-    }
+    const userAuthorizationHeaderValues = await this.redisClient.smembers(`${this.USER_CST_PREFIX}:${userUuid}`)
 
     const pipeline = this.redisClient.pipeline()
-    for (const authorizationHeaderKey of authorizationHeaderKeys) {
-      pipeline.del(authorizationHeaderKey)
-      const authorizationHeaderValue = authorizationHeaderKey.replace(`${this.PREFIX}:${userUuid}:`, '')
+    for (const authorizationHeaderValue of userAuthorizationHeaderValues) {
       pipeline.del(`${this.PREFIX}:${authorizationHeaderValue}`)
     }
+    pipeline.del(`${this.USER_CST_PREFIX}:${userUuid}`)
+
     await pipeline.exec()
   }
 }
