@@ -16,12 +16,17 @@ export class RedisCrossServiceTokenCache implements CrossServiceTokenCacheInterf
   async set(dto: {
     authorizationHeaderValue: string,
     encodedCrossServiceToken: string,
-    expiresInSeconds: number,
+    expiresAtInSeconds: number,
     userUuid: string
   }): Promise<void> {
     const pipeline = this.redisClient.pipeline()
-    pipeline.setex(`${this.PREFIX}:${dto.userUuid}:${dto.authorizationHeaderValue}`, dto.expiresInSeconds, dto.encodedCrossServiceToken)
-    pipeline.setex(`${this.PREFIX}:${dto.authorizationHeaderValue}`, dto.expiresInSeconds, dto.encodedCrossServiceToken)
+
+    pipeline.set(`${this.PREFIX}:${dto.userUuid}:${dto.authorizationHeaderValue}`, dto.encodedCrossServiceToken)
+    pipeline.expireat(`${this.PREFIX}:${dto.userUuid}:${dto.authorizationHeaderValue}`, dto.expiresAtInSeconds)
+
+    pipeline.set(`${this.PREFIX}:${dto.authorizationHeaderValue}`, dto.encodedCrossServiceToken)
+    pipeline.expireat(`${this.PREFIX}:${dto.authorizationHeaderValue}`, dto.expiresAtInSeconds)
+
     await pipeline.exec()
   }
 

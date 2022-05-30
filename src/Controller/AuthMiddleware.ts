@@ -1,4 +1,5 @@
 import { CrossServiceTokenData } from '@standardnotes/auth'
+import { TimerInterface } from '@standardnotes/time'
 import { NextFunction, Request, Response } from 'express'
 import { inject, injectable } from 'inversify'
 import { BaseMiddleware } from 'inversify-express-utils'
@@ -17,6 +18,7 @@ export class AuthMiddleware extends BaseMiddleware {
     @inject(TYPES.AUTH_JWT_SECRET) private jwtSecret: string,
     @inject(TYPES.CROSS_SERVICE_TOKEN_CACHE_TTL) private crossServiceTokenCacheTTL: number,
     @inject(TYPES.CrossServiceTokenCache) private crossServiceTokenCache: CrossServiceTokenCacheInterface,
+    @inject(TYPES.Timer) private timer: TimerInterface,
     @inject(TYPES.Logger) private logger: Logger
   ) {
     super()
@@ -75,7 +77,7 @@ export class AuthMiddleware extends BaseMiddleware {
         await this.crossServiceTokenCache.set({
           authorizationHeaderValue: authHeaderValue,
           encodedCrossServiceToken: crossServiceToken,
-          expiresInSeconds: this.crossServiceTokenCacheTTL,
+          expiresAtInSeconds: this.getCrossServiceTokenCacheExpireTimestamp(decodedToken),
           userUuid: decodedToken.user.uuid,
         })
       }
@@ -96,5 +98,18 @@ export class AuthMiddleware extends BaseMiddleware {
     }
 
     return next()
+  }
+
+  private getCrossServiceTokenCacheExpireTimestamp(token: CrossServiceTokenData): number {
+    const crossServiceTokenDefaultCacheExpiration = this.timer.getTimestampInSeconds() + this.crossServiceTokenCacheTTL
+
+    if (token.session === undefined) {
+      return crossServiceTokenDefaultCacheExpiration
+    }
+
+    const sessionAccessExpiration = this.timer.convertStringDateToSeconds(token.session.access_expiration)
+    const sessionRefreshExpiration = this.timer.convertStringDateToSeconds(token.session.refresh_expiration)
+
+    return Math.min(crossServiceTokenDefaultCacheExpiration, sessionAccessExpiration, sessionRefreshExpiration)
   }
 }

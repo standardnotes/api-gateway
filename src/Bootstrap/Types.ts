@@ -24,6 +24,7 @@ const TYPES = {
   CrossServiceTokenCache: Symbol.for('CrossServiceTokenCache'),
   AnalyticsStore: Symbol.for('AnalyticsStore'),
   DomainEventPublisher: Symbol.for('DomainEventPublisher'),
+  Timer: Symbol.for('Timer'),
 }
 
 export default TYPES

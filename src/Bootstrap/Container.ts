@@ -5,6 +5,7 @@ import { Container } from 'inversify'
 import * as AWS from 'aws-sdk'
 import { AnalyticsStoreInterface, RedisAnalyticsStore } from '@standardnotes/analytics'
 import { RedisDomainEventPublisher, SNSDomainEventPublisher } from '@standardnotes/domain-events-infra'
+import { Timer, TimerInterface } from '@standardnotes/time'
 
 import { Env } from './Env'
 import TYPES from './Types'
@@ -86,6 +87,7 @@ export class ContainerConfigLoader {
       container.get(TYPES.Redis)
     ))
     container.bind<CrossServiceTokenCacheInterface>(TYPES.CrossServiceTokenCache).to(RedisCrossServiceTokenCache)
+    container.bind<TimerInterface>(TYPES.Timer).toConstantValue(new Timer())
 
     if (env.get('SNS_TOPIC_ARN', true)) {
       container.bind<SNSDomainEventPublisher>(TYPES.DomainEventPublisher).toConstantValue(
