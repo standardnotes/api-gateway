@@ -8,7 +8,7 @@ import { ContainerConfigLoader } from '../src/Bootstrap/Container'
 import TYPES from '../src/Bootstrap/Types'
 import { Env } from '../src/Bootstrap/Env'
 import { DomainEventPublisherInterface, DailyVersionAdoptionReportGeneratedEvent } from '@standardnotes/domain-events'
-import { AnalyticsStoreInterface } from '@standardnotes/analytics'
+import { AnalyticsActivity, AnalyticsStoreInterface } from '@standardnotes/analytics'
 
 
 const requestReport = async (
@@ -28,6 +28,12 @@ const requestReport = async (
       applicationStatistics: await analyticsStore.getYesterdayApplicationUsage(),
       snjsStatistics: await analyticsStore.getYesterdaySNJSUsage(),
       outOfSyncIncidents: await analyticsStore.getYesterdayOutOfSyncIncidents(),
+      activityStatistics: [
+        {
+          name: AnalyticsActivity.EditingItems,
+          retention: await analyticsStore.calculateActivityRetentionForYesterday(AnalyticsActivity.EditingItems),
+        },
+      ],
     },
   }
 
