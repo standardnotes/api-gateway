@@ -7,7 +7,7 @@ import { Logger } from 'winston'
 import { ContainerConfigLoader } from '../src/Bootstrap/Container'
 import TYPES from '../src/Bootstrap/Types'
 import { Env } from '../src/Bootstrap/Env'
-import { DomainEventPublisherInterface, DailyVersionAdoptionReportGeneratedEvent } from '@standardnotes/domain-events'
+import { DomainEventPublisherInterface, DailyAnalyticsReportGeneratedEvent } from '@standardnotes/domain-events'
 import { AnalyticsActivity, AnalyticsStoreInterface } from '@standardnotes/analytics'
 
 
@@ -15,8 +15,8 @@ const requestReport = async (
   analyticsStore: AnalyticsStoreInterface,
   domainEventPublisher: DomainEventPublisherInterface,
 ): Promise<void> => {
-  const event: DailyVersionAdoptionReportGeneratedEvent = {
-    type: 'DAILY_VERSION_ADOPTION_REPORT_GENERATED',
+  const event: DailyAnalyticsReportGeneratedEvent = {
+    type: 'DAILY_ANALYTICS_REPORT_GENERATED',
     createdAt: new Date(),
     meta: {
       correlation: {
@@ -32,6 +32,7 @@ const requestReport = async (
         {
           name: AnalyticsActivity.EditingItems,
           retention: await analyticsStore.calculateActivityRetentionForYesterday(AnalyticsActivity.EditingItems),
+          totalCount: await analyticsStore.calculateActivityTotalCountForYesterday(AnalyticsActivity.EditingItems),
         },
       ],
     },
